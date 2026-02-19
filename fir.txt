@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "python312"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001,
+      "host": "192.168.1.226"
+    },
+    "firestore": {
+      "port": 8080,
+      "host": "192.168.1.226"
+    },
+    "pubsub": {
+      "port": 8085,
+      "host": "192.168.1.226"
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000,
+      "host": "192.168.1.226"
+    },
+    "singleProjectMode": true
+  }
+}

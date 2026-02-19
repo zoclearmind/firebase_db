@@ -1,0 +1,15 @@
+{
+  "name": "firebase-db",
+  "version": "1.0.0",
+  "description": "Nos deb ferebase db",
+  "license": "ISC",
+  "author": "zocoder",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "firebase-tools": "^15.6.0"
+  }
+}
