@@ -1,17 +1,37 @@
 {
-  "functions": {
-    "source": "functions",
-    "runtime": "python312"
-  },
+ "functions": [
+    {
+      "source": "functions-email-firebase",
+      "codebase": "email-service",
+      "runtime": "python312"
+    },
+    {
+      "source": "functions-ticket-firebase",
+      "codebase": "ticket-service",
+      "runtime": "python312"
+    },  {
+      "source": "functions-bronchure-firebase",
+      "codebase": "bronchure-service",
+      "runtime": "python312"
+    }
+  ],
   "emulators": {
     "functions": {
       "port": 5001,
       "host": "0.0.0.0"
     },
     "firestore": {
-      "port": 8080,
+      "port": 8082,
       "host": "0.0.0.0"
     },
+    "storage": {
+      "port": 9199
+    },
+    "pubsub": {
+      "port": 8085,
+      "host": "0.0.0.0"
+    },
+    
     "ui": {
       "enabled": true,
       "port": 4000,

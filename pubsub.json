@@ -1,0 +1,24 @@
+{
+  "topics": [
+    {
+      "name": "notifications-inbound",
+      "subscriptions": [
+        {
+          "name": "notifications-inbound-sub"
+        }
+      ]
+    },
+    {
+      "name": "sse-delivery-topic",
+      "subscriptions": [
+        {
+          "name": "sse-delivery-sub"
+        }
+      ]
+    },
+    {
+      "name": "prod-registration-confirmed",
+      "subscriptions": []
+    }
+  ]
+}
