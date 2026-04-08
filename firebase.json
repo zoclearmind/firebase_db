@@ -10,8 +10,8 @@
       "codebase": "ticket-service",
       "runtime": "python312"
     },  {
-      "source": "functions-bronchure-firebase",
-      "codebase": "bronchure-service",
+      "source": "functions-brochure-firebase",
+      "codebase": "brochure-service",
       "runtime": "python312"
     }
   ],
