@@ -1,3 +1,18 @@
+## Installation varible python et lance projet cloud fuction
+```bash
+python -m venv venv
+```
+
+## l’activer :
+```bash
+venv\Scripts\activate
+```
+
+## Installer toutes les dépendances listées dans le fichier requirements.txt
+```bash
+pip install -r requirements.txt
+```
+
 ## Login pour emulator firebase local
 
 ```bash
@@ -30,7 +45,6 @@ curl -X PUT "http://localhost:8085/v1/projects/demo-event-app/subscriptions/noti
 curl -X PUT "http://localhost:8085/v1/projects/demo-event-app/subscriptions/sse-delivery-sub" \
   -H "Content-Type: application/json" \
   -d '{"topic": "projects/demo-event-app/topics/sse-delivery-topic", "ackDeadlineSeconds": 10}'
-
 ```
 
 # Creation variabale local en spring pas ici
