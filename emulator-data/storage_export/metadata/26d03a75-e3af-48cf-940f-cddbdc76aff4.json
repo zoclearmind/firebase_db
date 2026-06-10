@@ -1,0 +1,15 @@
+{
+  "name": "tickets/badge_abc123token.zpl",
+  "bucket": "demo-event-app.appspot.com",
+  "metageneration": 1,
+  "generation": 1779803815128,
+  "contentType": "text/plain; charset=utf-8",
+  "storageClass": "STANDARD",
+  "downloadTokens": [],
+  "etag": "MS33m1iPIrtKtD4QRwN1yjRQOio",
+  "timeCreated": "2026-05-26T13:56:55.128Z",
+  "updated": "2026-05-26T13:56:55.128Z",
+  "size": 238,
+  "md5Hash": "ze9FZ/v//C6I1FlMrAVSww==",
+  "crc32c": "2585365535"
+}

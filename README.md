@@ -27,7 +27,8 @@ pip install -r requirements.txt
 
 # et lancer sur commande
 ```bash
- npx firebase emulators:start --project demo-event-app
+
+ npx firebase emulators:start --project demo-event-app --import=./emulator-data --export-on-exit=./emulator-data
 ```
 
 # Créer les topics
@@ -66,4 +67,22 @@ Get-Content .env.local | ForEach-Object {
 echo $env:GOOGLE_CLIENT_ID
 
 mvn spring-boot:run
+
+ngrok http --domain=overexert-gloomily-exchange.ngrok-free.dev 8080
+
+curl -X POST https://overexert-gloomily-exchange.ngrok-free.dev/webhook/messenger \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entry": [{
+      "messaging": [{
+        "sender": { "id": "27135442052716717" },
+        "referral": { "ref": "1484107550130618" },
+        "message": { "text": "Bonjour" }
+      }]
+    }]
+  }'
+
+
+
+curl "https://graph.facebook.com/v21.0/me/conversations?fields=participants&access_token=EAAVt8svNVyIBRtcaJHWGlBssKnRLuFL9c8U8I8ZCCVvZA51L4IWDhs0WNwwzVhK6u8FgEB5IvRZC7X18LEVYgTjIIge9c012rDckxODLV9woUltPuXi7kKLv3CCzYVRDhTUdg1gghvGH2IXAoGKyPu8L4sppfHZBia1RvsXKGh37GZBQew5pSc8zseVtFWFdf9ZAdKVgZDZD"
 ```
