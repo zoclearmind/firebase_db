@@ -7,10 +7,9 @@
 # ║     • Couleurs, polices    → templates/base.py              ║
 # ║     • Structure du header  → _hero()                        ║
 # ║     • Footer               → _footer()                      ║
-# ║     • Cards, alertes       → _info_card(), _alert(),        ║
-# ║                              _security_card()               ║
-# ║     • Bloc QR code         → _qr_block()                    ║
-# ║     • Textes de l'email    → email_sender.py                ║
+# ║     • Cards, boutons       → _info_card(), _cta_button(),   ║
+# ║                              _alert()                       ║
+# ║     • Contenu d'un email   → email_senders.py               ║
 # ║                                                              ║
 # ╚══════════════════════════════════════════════════════════════╝
 
@@ -125,14 +124,12 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
               <div class="hero-title"
                    style="font-family:Georgia,'Times New Roman',serif;
                           font-size:20px;font-weight:700;color:#ffffff;
-                          line-height:1.3;margin:0;
-                          text-shadow:0 1px 4px rgba(0,0,0,0.9);">
+                          line-height:1.3;margin:0;">
                 {title}
               </div>
               <div class="hero-sub"
                    style="font-family:Arial,sans-serif;font-size:12px;
-                          color:#ffffff;margin-top:6px;letter-spacing:0.3px;
-                          text-shadow:0 1px 3px rgba(0,0,0,0.9);">
+                          color:#cccccc;margin-top:6px;letter-spacing:0.3px;">
                 {subtitle}
               </div>
             </td>
@@ -242,78 +239,151 @@ def _info_row(icon: str, label: str, value: str) -> str:
 """
 
 
-def _qr_block(qr_token: str = "") -> str:
+def _cta_button(url: str, label: str) -> str:
     """
-    Bloc QR code centré sur fond sombre.
-    L'image est injectée via Content-ID (src="cid:qrcode") — pas une URL externe.
-    La frame blanche autour du QR est nécessaire pour le contraste sur fond dark.
-    Taille réduite à 160px sur mobile via .qr-img.
+    Bouton call-to-action centré.
+    Technique double :
+      - VML v:roundrect pour Outlook Windows (commentaires conditionnels)
+      - <a> inline-block pour tous les autres clients
     """
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-           width="100%" style="margin:28px 0;">
+           width="100%" style="margin:28px 0 8px 0;">
       <tr>
-        <td class="qr-td" align="center"
-            style="background-color:#1a1a2e;border-radius:14px;
-                   padding:28px 24px;text-align:center;border:1px solid #2d2d4a;">
-
-          <!-- Label au-dessus du QR -->
-          <p style="margin:0 0 16px 0;font-family:Arial,sans-serif;font-size:10px;
-                     color:#b89000;text-transform:uppercase;letter-spacing:3px;">
-            Votre code d'acc&#232;s personnel
-          </p>
-
-          <!-- Frame blanche avec bordure dorée autour du QR -->
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-                 align="center">
-            <tr>
-              <td class="qr-frame-td"
-                  style="background-color:#ffffff;border-radius:10px;
-                         padding:14px;border:2px solid #fbbf24;">
-                <img class="qr-img"
-                     src="cid:qrcode"
-                     alt="QR Code d'acc&#232;s"
-                     width="190" height="190"
-                     style="width:190px;height:190px;display:block;" />
-              </td>
-            </tr>
-          </table>
-
-          <!-- Instruction sous le QR -->
-          <p style="margin:16px 0 0 0;font-family:Arial,sans-serif;font-size:13px;
-                     color:#c9a800;line-height:1.6;">
-            {qr_token}
-          </p>
-
+        <td align="center">
+          <!--[if mso | IE]>
+          <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                       xmlns:w="urn:schemas-microsoft-com:office:word"
+                       href="{url}"
+                       style="height:50px;v-text-anchor:middle;width:280px;"
+                       arcsize="20%" strokecolor="#fde047" strokeweight="1pt"
+                       fillcolor="#1a1a2e">
+            <w:anchorlock/>
+            <center style="color:#fde047;font-family:Arial,sans-serif;
+                           font-size:15px;font-weight:bold;">
+              {label}
+            </center>
+          </v:roundrect>
+          <![endif]-->
+          <!--[if !mso]><!-->
+          <a href="{url}" class="cta-link" target="_blank"
+             style="display:inline-block;background-color:#1a1a2e;
+                    color:#fde047;font-family:Arial,sans-serif;font-size:15px;
+                    font-weight:700;text-decoration:none;border-radius:10px;
+                    padding:16px 40px;mso-hide:all;border:1px solid #3a3a00;">
+            {label}
+          </a>
+          <!--<![endif]-->
         </td>
       </tr>
     </table>
 """
 
 
-def _security_card(items: list) -> str:
+def _cta_secondary(url: str, label: str) -> str:
+    """Lien secondaire centré sous le bouton principal (ex: Décliner l'invitation)."""
+    return f"""
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+           width="100%" style="margin:8px 0 0 0;">
+      <tr>
+        <td align="center">
+          <a href="{url}" target="_blank"
+             style="font-family:Arial,sans-serif;font-size:13px;
+                    color:#9ca3af;text-decoration:underline;">
+            {label}
+          </a>
+        </td>
+      </tr>
+    </table>
+"""
+
+
+def _alert(content: str, variant: str = "warning") -> str:
     """
-    Card sécurité avec puces rouges.
-    items : liste de chaînes HTML décrivant chaque consigne.
-    Utilise des <div> pour les puces (pas de <ul><li> — mal supportés dans Gmail).
+    Encadré d'alerte avec bordure left colorée.
+    variant = "warning" → fond jaune pâle, bordure dorée
+    variant = "danger"  → fond rouge pâle, bordure rouge
+    """
+    styles = {
+        "warning": ("#fffbeb", "#fbbf24", "#92400e"),
+        "danger":  ("#fff5f5", "#ef4444", "#7f1d1d"),
+    }
+    bg, border, color = styles.get(variant, styles["warning"])
+    return f"""
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+           width="100%" style="margin:20px 0;">
+      <tr>
+        <td style="background-color:{bg};border-radius:8px;padding:14px 16px;">
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                     color:{color};line-height:1.65;">
+            {content}
+          </p>
+        </td>
+      </tr>
+    </table>
+"""
+
+
+def _code_block(code: str, label: str = "Code d'activation") -> str:
+    """
+    Bloc fond sombre avec un code en grand centré.
+    Réutilisé pour l'activation de compte ET le reset password.
+    label : texte au-dessus du code (modifiable selon le contexte)
+    """
+    return f"""
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+           width="100%" style="margin:28px 0;">
+      <tr>
+        <td class="code-block-td" align="center"
+            style="background-color:#1a1a2e;border-radius:14px;
+                   padding:28px 32px;text-align:center;border:1px solid #2d2d4a;">
+          <p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:10px;
+                     color:#b89000;text-transform:uppercase;letter-spacing:3px;">
+            {label}
+          </p>
+          <p class="code-val"
+             style="margin:0;font-family:'Courier New',Courier,monospace;
+                    font-size:40px;font-weight:700;color:#fde047;
+                    letter-spacing:14px;line-height:1;">
+            {code}
+          </p>
+        </td>
+      </tr>
+    </table>
+"""
+
+
+def _steps_card(steps: list) -> str:
+    """
+    Card avec étapes numérotées.
+    steps : liste de chaînes HTML décrivant chaque étape.
+    Utilise des tables pour les puces numérotées (pas de <ol> — mal supporté).
     """
     rows_html = ""
-    for item in items:
+    for i, step in enumerate(steps, 1):
+        margin = "style='margin-bottom:14px;'" if i < len(steps) else ""
         rows_html += f"""
         <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-               width="100%" style="margin-bottom:8px;">
+               width="100%" {margin}>
           <tr>
-            <!-- Puce rouge -->
-            <td valign="top" width="14"
-                style="vertical-align:top;padding-top:5px;padding-right:8px;">
-              <div style="width:6px;height:6px;background-color:#dc2626;
-                          border-radius:50%;"></div>
+            <td valign="top" width="36" style="vertical-align:top;padding-top:2px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="28" height="28" align="center" valign="middle"
+                      style="width:28px;height:28px;border-radius:50%;
+                             background-color:#fde047;text-align:center;
+                             font-family:Arial,sans-serif;font-size:13px;
+                             font-weight:700;color:#92400e;line-height:28px;">
+                    {i}
+                  </td>
+                </tr>
+              </table>
             </td>
-            <!-- Texte de la consigne -->
-            <td class="sec-text-td" valign="top"
-                style="font-family:Arial,sans-serif;font-size:13px;
-                       color:#7f1d1d;line-height:1.65;vertical-align:top;">
-              {item}
+            <td valign="top"
+                style="font-family:Arial,sans-serif;font-size:14px;
+                       color:#78716c;line-height:1.6;vertical-align:top;
+                       padding-top:4px;">
+              {step}
             </td>
           </tr>
         </table>
@@ -323,12 +393,12 @@ def _security_card(items: list) -> str:
            width="100%" style="margin:24px 0;">
       <tr>
         <td class="card-td"
-            style="background-color:#fff5f5;border-radius:10px;
-                   border:1px solid #fecaca;padding:20px 22px;">
-          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
-                     font-weight:700;color:#991b1b;text-transform:uppercase;
+            style="background-color:#fffbeb;border-radius:10px;
+                   border:1px solid #fde68a;padding:20px 22px;">
+          <p style="margin:0 0 16px 0;font-family:Arial,sans-serif;font-size:10px;
+                     font-weight:700;color:#b45309;text-transform:uppercase;
                      letter-spacing:2.5px;">
-            Consignes de s&#233;curit&#233; importantes
+            &#9733;&nbsp; Comment participer
           </p>
           {rows_html}
         </td>
@@ -340,7 +410,6 @@ def _security_card(items: list) -> str:
 def _footer() -> str:
     """
     Pied de page : logo mini + séparateur doré + contacts + copyright.
-    Deux colonnes sur desktop, empilées sur mobile.
     """
     year = datetime.now().year
     return f"""
@@ -382,27 +451,32 @@ def _footer() -> str:
           </tr>
         </table>
 
-        <!-- Contacts (gauche) + Copyright (droite) -->
+        <!-- Contacts -->
         <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128222;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-                    <a href="tel:+261383204613" style="color:#78716c;text-decoration:none;">+261 38 32 046 13</a>
-                </td>
-            </tr>
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-                    <a href="mailto:sales@athena-event.com" style="color:#78716c;text-decoration:none;">sales@athena-event.com</a>
-                </td>
-            </tr>
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#127760;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;">
-                    <a href="https://www.athena-event.com" style="color:#78716c;text-decoration:none;">www.athena-event.com</a>
-                </td>
-            </tr>
+          <tr>
+            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128222;</td>
+            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
+              <a href="tel:+261383204613" style="color:#78716c;text-decoration:none;">+261 38 32 046 13</a>
+            </td>
+          </tr>
+          <tr>
+            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
+            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
+              <a href="mailto:sales@athena-event.com" style="color:#78716c;text-decoration:none;">sales@athena-event.com</a>
+            </td>
+          </tr>
+          <tr>
+            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#127760;</td>
+            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;">
+              <a href="https://www.athena-event.com" style="color:#78716c;text-decoration:none;">www.athena-event.com</a>
+            </td>
+          </tr>
         </table>
+
+        <p style="margin:18px 0 0 0;font-family:Arial,sans-serif;font-size:11px;
+                   color:#a8a29e;line-height:1.7;">
+          &copy; {year} Athena Event by Clearmind Analytics — Antananarivo, Madagascar
+        </p>
 
       </td>
     </tr>

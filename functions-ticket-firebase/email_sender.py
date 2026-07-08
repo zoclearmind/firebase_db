@@ -41,6 +41,7 @@ def send_ticket_email_invited(
     qr_base64: str,
     registration_id: str,
     qr_token: str,
+    event_image_url: str = None,
 ):
     """
     Email envoyé au commanditaire (emailDestinateur) pour un billet
@@ -62,10 +63,10 @@ def send_ticket_email_invited(
 
     # ── Infos inscription ──
     info_rows = (
-        _info_row("&#128100;", "Participant",  badge_owner_full)
-        + _info_row("&#127881;", "Événement",  f"<strong>{event_title}</strong>")
-        + _info_row("&#128197;", "Date",        event_start)
-        + _info_row("&#128205;", "Lieu",        event_location)
+        _info_row("", "Participant",  badge_owner_full)
+        + _info_row("", "Événement",  f"<strong>{event_title}</strong>")
+        + _info_row("", "Date",        event_start)
+        + _info_row("", "Lieu",        event_location)
     )
 
     # ── Consignes de sécurité ──
@@ -83,6 +84,7 @@ def send_ticket_email_invited(
             title="Confirmation d'inscription",
             subtitle=f"Billet pour {event_title}",
             email_type_label="Billet événement",
+            hero_image_url=event_image_url or "",
         )
         + _body_open(
             greeting=f"Bonjour {destinateur_first_name} {destinateur_last_name},",
@@ -138,9 +140,9 @@ Cordialement,
 L'équipe Athena Event
 
 ---
-📞 +261 38 32 046 13
-📧 contact@clearmind-analytics.com
-🌐 www.athena-event.com
++261 38 32 046 13
+sales@athena-event.com
+www.athena-event.com
 
 © {datetime.now().year} Athena Event by Clearmind Analytics
 Antananarivo, Madagascar
@@ -173,9 +175,9 @@ Antananarivo, Madagascar
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        logging.info(f"✅ Email billet invité envoyé à {email} (billet: {badge_owner_full})")
+        logging.info(f"Email billet invité envoyé à {email} (billet: {badge_owner_full})")
     except Exception as e:
-        logging.error(f"❌ Erreur envoi email : {e}")
+        logging.error(f"Erreur envoi email : {e}")
         raise
 
 
@@ -188,7 +190,8 @@ def send_ticket_email_with_qr(
     event_location: str,
     qr_base64: str,
     registration_id: str,
-    qr_token: str
+    qr_token: str,
+    event_image_url: str = None,
 ):
     SMTP_HOST     = os.environ.get("SMTP_HOST", "smtp.zeptomail.com")
     SMTP_PORT     = int(os.environ.get("SMTP_PORT", "587"))
@@ -201,11 +204,11 @@ def send_ticket_email_with_qr(
 
     # ── Infos inscription ──
     info_rows = (
-        _info_row("&#128100;", "Participant", f"{first_name} {last_name}")
-        + _info_row("&#128231;", "Email",      email)
-        + _info_row("&#127881;", "Événement",  f"<strong>{event_title}</strong>")
-        + _info_row("&#128197;", "Date",       event_start)
-        + _info_row("&#128205;", "Lieu",       event_location)
+        _info_row("", "Participant", f"{first_name} {last_name}")
+        + _info_row("", "Email",      email)
+        + _info_row("", "Événement",  f"<strong>{event_title}</strong>")
+        + _info_row("", "Date",       event_start)
+        + _info_row("", "Lieu",       event_location)
     )
 
     # ── Consignes de sécurité ──
@@ -223,6 +226,7 @@ def send_ticket_email_with_qr(
             title="Confirmation d'inscription",
             subtitle=f"Votre billet pour {event_title}",
             email_type_label="Billet événement",
+            hero_image_url=event_image_url or "",
         )
         + _body_open(
             greeting=f"Bonjour {first_name} {last_name},",
@@ -277,9 +281,9 @@ Cordialement,
 L'équipe Athena Event
 
 ---
-📞 +261 38 32 046 13
-📧 contact@clearmind-analytics.com
-🌐 www.athena-event.com
++261 38 32 046 13
+sales@athena-event.com
+www.athena-event.com
 
 © {datetime.now().year} Athena Event by Clearmind Analytics
 Antananarivo, Madagascar
@@ -316,7 +320,7 @@ Antananarivo, Madagascar
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        logging.info(f"✅ Email billet envoyé à {email}")
+        logging.info(f"Email billet envoyé à {email}")
     except Exception as e:
-        logging.error(f"❌ Erreur envoi email : {e}")
+        logging.error(f"Erreur envoi email : {e}")
         raise

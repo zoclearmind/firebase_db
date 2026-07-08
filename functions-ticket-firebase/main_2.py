@@ -213,20 +213,20 @@ def _email_close() -> str:
 # COMPOSANTS VISUELS
 # ──────────────────────────────────────────────────────────────
 
-def _hero(title: str, subtitle: str, email_type_label: str = "") -> str:
+def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url: str = "") -> str:
     """
     Bandeau hero avec image de fond, logo, nom de marque.
 
     email_type_label : texte affiché dans le badge en haut à droite du hero.
-                       Doit décrire explicitement le type d'email, ex :
-                       "Confirmation d'inscription", "Billet événement", etc.
-                       Laisser vide pour ne pas afficher de badge.
+    hero_image_url   : image de fond personnalisée (ex: image de l'événement).
+                       Si vide, utilise HERO_IMAGE_URL par défaut.
 
     Technique image de fond :
       - background-image CSS  → Gmail, Apple Mail, Samsung Mail
       - attribut background=  → clients anciens
       - VML v:rect            → Outlook Windows (commentaires conditionnels)
     """
+    bg_url = hero_image_url or HERO_IMAGE_URL
     badge_col = ""
     if email_type_label:
         badge_col = f"""
@@ -254,9 +254,9 @@ def _hero(title: str, subtitle: str, email_type_label: str = "") -> str:
     <!--[if mso | IE]><tr><td style="background-color:#1a1a2e;padding:0;"><![endif]-->
     <tr>
       <td class="hero-td"
-          background="{HERO_IMAGE_URL}"
+          background="{bg_url}"
           style="background-color:#1a1a2e;
-                 background-image:url('{HERO_IMAGE_URL}');
+                 background-image:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url('{bg_url}');
                  background-size:cover;background-position:center center;
                  background-repeat:no-repeat;
                  padding:28px 32px;height:200px;vertical-align:middle;">
@@ -264,7 +264,7 @@ def _hero(title: str, subtitle: str, email_type_label: str = "") -> str:
         <!--[if mso | IE]>
         <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
                 style="width:600px;height:200px;position:absolute;">
-          <v:fill type="frame" src="{HERO_IMAGE_URL}" color="#1a1a2e"/>
+          <v:fill type="frame" src="{bg_url}" color="#1a1a2e"/>
           <v:textbox inset="0,0,0,0">
         <![endif]-->
 
@@ -314,12 +314,14 @@ def _hero(title: str, subtitle: str, email_type_label: str = "") -> str:
               <div class="hero-title"
                    style="font-family:Georgia,'Times New Roman',serif;
                           font-size:20px;font-weight:700;color:#ffffff;
-                          line-height:1.3;margin:0;">
+                          line-height:1.3;margin:0;
+                          text-shadow:0 1px 4px rgba(0,0,0,0.9);">
                 {title}
               </div>
               <div class="hero-sub"
                    style="font-family:Arial,sans-serif;font-size:12px;
-                          color:#cccccc;margin-top:6px;letter-spacing:0.3px;">
+                          color:#ffffff;margin-top:6px;letter-spacing:0.3px;
+                          text-shadow:0 1px 3px rgba(0,0,0,0.9);">
                 {subtitle}
               </div>
             </td>
@@ -391,8 +393,7 @@ def _info_card(rows_html: str, label: str = "DÉTAILS") -> str:
       <tr>
         <td class="card-td"
             style="background-color:#fffbeb;border-radius:10px;
-                   border:1px solid #fde68a;border-left-width:4px;
-                   border-left-color:#fbbf24;padding:20px 22px;">
+                   border:1px solid #fde68a;padding:20px 22px;">
           <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
                      font-weight:700;color:#b45309;text-transform:uppercase;
                      letter-spacing:2.5px;">
@@ -410,15 +411,17 @@ def _info_row(icon: str, label: str, value: str) -> str:
     Ligne d'information avec icône.
     Utilise une table pour l'alignement (flex non supporté dans tous les clients email).
     """
-    return f"""
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-           width="100%" style="margin-bottom:10px;">
-      <tr>
+    icon_cell = f"""
         <td valign="top" width="22"
             style="font-family:Arial,sans-serif;font-size:14px;
                    color:#57534e;padding-top:1px;vertical-align:top;">
           {icon}
-        </td>
+        </td>""" if icon else ""
+    return f"""
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+           width="100%" style="margin-bottom:10px;">
+      <tr>
+        {icon_cell}
         <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
                                  color:#57534e;line-height:1.5;vertical-align:top;">
           <strong style="color:#44403c;">{label}&nbsp;:</strong> {value}
@@ -443,8 +446,7 @@ def _alert(content: str, variant: str = "warning") -> str:
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:20px 0;">
       <tr>
-        <td style="background-color:{bg};border-left:3px solid {border};
-                    border-radius:0 8px 8px 0;padding:14px 16px;">
+        <td style="background-color:{bg};border-radius:8px;padding:14px 16px;">
           <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;
                      color:{color};line-height:1.65;">
             {content}
@@ -537,12 +539,11 @@ def _security_card(items: list) -> str:
       <tr>
         <td class="card-td"
             style="background-color:#fff5f5;border-radius:10px;
-                   border:1px solid #fecaca;border-left-width:4px;
-                   border-left-color:#dc2626;padding:20px 22px;">
+                   border:1px solid #fecaca;padding:20px 22px;">
           <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
                      font-weight:700;color:#991b1b;text-transform:uppercase;
                      letter-spacing:2.5px;">
-            &#128274; Consignes de s&#233;curit&#233; importantes
+            Consignes de s&#233;curit&#233; importantes
           </p>
           {rows_html}
         </td>
@@ -607,7 +608,7 @@ def _footer() -> str:
             <tr>
               <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
               <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-                <a href="mailto:contact@clearmind-analytics.com" style="color:#78716c;text-decoration:none;">contact@clearmind-analytics.com</a>
+                <a href="mailto:sales@athena-event.com" style="color:#78716c;text-decoration:none;">sales@athena-event.com</a>
               </td>
             </tr>
             <tr>
@@ -649,10 +650,10 @@ def _build_html(rows: str, preheader: str = "") -> str:
 LABEL_WIDTH  = 1181
 LABEL_HEIGHT = 650
 
-MAX_CHARS_PRENOM     = 12   # police 88×82
-MAX_CHARS_NOM        = 13   # police 80×72
-MAX_CHARS_ENTREPRISE = 21   # police 52×52
-MAX_CHARS_POSTE      = 21
+MAX_CHARS_PRENOM     = 19   # police 60×52
+MAX_CHARS_NOM        = 12   # police 88×82 (grande)
+MAX_CHARS_ENTREPRISE = 29   # police 35×35
+MAX_CHARS_POSTE      = 29   # police 35×35
 
 
 def _truncate(text: str, max_chars: int) -> str:
@@ -673,22 +674,50 @@ def _build_zpl(
     company = _truncate(company_name.strip().upper(), MAX_CHARS_ENTREPRISE) if company_name and company_name.strip() and company_name.strip() != "N/A" else ""
     role    = _truncate(user_role.strip(), MAX_CHARS_POSTE)                 if user_role    and user_role.strip()    and user_role.strip()    != "N/A" else ""
 
-    company_line = f"\n^FO44,338^A0N,52,52^FD{company}^FS" if company else ""
-    role_line    = f"\n^FO44,400^A0N,52,52^FD{role}^FS"    if role    else ""
+    company_line = f"\n^FO44,360^A0N,35,35^FD{company}^FS" if company else ""
+    role_line    = f"\n^FO44,420^A0N,35,35^FD{role}^FS"    if role    else ""
 
     return (
         f"^XA"
         f"^PW{LABEL_WIDTH}"
         f"^LL{LABEL_HEIGHT}"
         f"^CI28"
-        f"^FO44,100^A0N,88,82^FD{prenom}^FS"                          # Prénom — en haut
-        f"^FO44,220^A0N,80,72^FD{nom}^FS"                             # Nom — en dessous
-        f"{company_line}"
-        f"{role_line}"
-        f"^FO700,60^BQN,2,20^FDQA,{qr_token}^FS"                     # QR code — module 20 dots
-        f"^FO700,560^A0N,34,34^FB437,1,0,C^FD{qr_token}^FS"          # Token centré sous QR
+        f"^FO44,100^A0N,60,52^FD{prenom}^FS"                          # Prénom — en haut (petit)
+        f"^FO44,180^A0N,88,82^FD{nom}^FS"                             # Nom — en dessous (grand)
+        f"{company_line}"                                              # Entreprise (optionnel)
+        f"{role_line}"                                                 # Poste (optionnel)
+        f"^FO700,90^BQN,2,20^FDQA,{qr_token}^FS"                      # QR code natif — module 20 dots
+        f"^FO660,555^A0N,38,50^FB537,1,0,C^FD{qr_token}^FS"          # Token centré sous QR
         f"^XZ"
     )
+
+
+def _generate_and_upload_zpl(
+    bucket_name: str,
+    event_id: str,
+    qr_token: str,
+    user_first_name: str,
+    user_last_name: str,
+    company_name: str,
+    user_role: str,
+) -> None:
+    """Génère le badge ZPL et l'uploade sur GCS."""
+    zpl_content = _build_zpl(
+        qr_token=qr_token,
+        user_first_name=user_first_name,
+        user_last_name=user_last_name,
+        company_name=company_name,
+        user_role=user_role,
+    )
+    logging.info("Badge ZPL généré")
+    logging.info(f"Bucket cible: {bucket_name}")
+    try:
+        blob = storage_client.bucket(bucket_name).blob(f"tickets/{event_id}/{qr_token}.zpl")
+        blob.upload_from_string(zpl_content.encode("utf-8"), content_type="text/plain; charset=utf-8")
+        logging.info(f"Upload OK: tickets/{event_id}/{qr_token}.zpl")
+    except Exception as upload_err:
+        logging.error(f"Erreur upload GCS: {upload_err}")
+        raise
 
 
 # ──────────────────────────────────────────────────────────────
@@ -698,13 +727,13 @@ def _build_zpl(
 @functions_framework.http
 def process_email(request):
     logging.info("=" * 80)
-    logging.info("🎫 MESSAGE REÇU SUR PUB/SUB - email-notifications")
+    logging.info("MESSAGE REÇU SUR PUB/SUB - email-notifications")
     logging.info("=" * 80)
 
     try:
         envelope = request.get_json(silent=True)
         if not envelope or "message" not in envelope:
-            logging.error("❌ Envelope Pub/Sub invalide")
+            logging.error("Envelope Pub/Sub invalide")
             return ("Bad Request: envelope invalide", 400)
 
         pubsub_message = envelope["message"]
@@ -713,27 +742,27 @@ def process_email(request):
             raw = base64.b64decode(pubsub_message["data"]).decode("utf-8")
             data = json.loads(raw)
         else:
-            logging.error("❌ Champ 'data' absent")
+            logging.error("Champ 'data' absent")
             return ("Bad Request: data absent", 400)
 
         logging.info(f"Contenu: {json.dumps(data, indent=2)}")
 
     except Exception as e:
-        logging.error(f"❌ Erreur lecture données: {e}")
+        logging.error(f"Erreur lecture données: {e}")
         return (f"Bad Request: {e}", 400)
 
     if "type" not in data:
-        logging.error("❌ Champ 'type' manquant")
+        logging.error("Champ 'type' manquant")
         return ("Bad Request: champ 'type' manquant", 400)
 
-    # ✅ ACCEPTER LES TROIS TYPES
+    # ACCEPTER LES TROIS TYPES
     ACCEPTED_TYPES = [
         "EVENT_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED_INVITED",
     ]
     if data["type"] not in ACCEPTED_TYPES:
-        logging.warning(f"⚠ Type incorrect: {data['type']}")
+        logging.warning(f"Type incorrect: {data['type']}")
         return ("Bad Request: type incorrect", 400)
 
     # ── Dispatch : billet invité ──────────────────────────────────
@@ -742,22 +771,23 @@ def process_email(request):
             "registrationId", "emailDestinateur",
             "userDestinateurFirstName", "userDestinateurLastName",
             "userPropretaireBadgeLastName", "userPropretaireBadgeFistName",
-            "eventTitle", "eventStartDate", "eventLocation", "qrCodeToken",
+            "eventTitle", "eventStartDate", "eventLocation", "qrCodeToken", "qrCode",
         ]
         missing_invited = [f for f in invited_required if f not in data]
         if missing_invited:
-            logging.error(f"❌ Champs manquants (invited): {missing_invited}")
+            logging.error(f"Champs manquants (invited): {missing_invited}")
             return (f"Bad Request: champs manquants {missing_invited}", 400)
 
         try:
             qr_token = data["qrCodeToken"]
-            qr_img = qrcode.make(qr_token, box_size=10, border=2)
+            qr_code  = data["qrCode"]
+            qr_img = qrcode.make(qr_code, box_size=10, border=2)
             qr_buffer = BytesIO()
             qr_img.save(qr_buffer, format="PNG")
             qr_buffer.seek(0)
             qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode('utf-8')
 
-            logging.info(f"🎫 Billet invité → {data['emailDestinateur']} (badge: {data['userPropretaireBadgeFistName']} {data['userPropretaireBadgeLastName']})")
+            logging.info(f"Billet invité → {data['emailDestinateur']} (badge: {data['userPropretaireBadgeFistName']} {data['userPropretaireBadgeLastName']})")
 
             send_ticket_email_invited(
                 email=data["emailDestinateur"],
@@ -774,22 +804,23 @@ def process_email(request):
             )
             return ("OK", 200)
         except Exception as e:
-            logging.error(f"❌ Échec billet invité: {str(e)}")
+            logging.error(f"Échec billet invité: {str(e)}")
             return (f"Internal Server Error: {str(e)}", 500)
 
     # ── Validation (types classiques) ────────────────────────────
     classic_required = [
-        "registrationId", "userId", "eventId",
+        "registrationId", "eventId",
         "userEmail", "userFirstName", "userLastName",
-        "eventTitle", "eventStartDate", "eventLocation", "qrCodeToken"
+        "eventTitle", "eventStartDate", "eventLocation", "qrCodeToken", "qrCode"
     ]
     missing = [f for f in classic_required if f not in data]
     if missing:
-        logging.error(f"❌ Champs manquants: {missing}")
+        logging.error(f"Champs manquants: {missing}")
         return (f"Bad Request: champs manquants {missing}", 400)
 
     # ── Extraction ───────────────────────────────────────────────
     registration_id = data["registrationId"]
+    user_id         = data.get("userId")  # facultatif, peut être null
     user_email      = data["userEmail"]
     user_first_name = data["userFirstName"]
     user_last_name  = data["userLastName"]
@@ -798,16 +829,17 @@ def process_email(request):
     event_location  = data["eventLocation"]
     event_id = data["eventId"]  # déjà présent ✅
     qr_token        = data["qrCodeToken"]
+    qr_code         = data["qrCode"]
     # company_name    = data["companyName"]
     # user_role       = data["userRole"]
     company_name    = data.get("companyName", "N/A")
     user_role       = data.get("userRole", "Participant")
 
-    logging.info(f"🎫 Billet pour {user_email} - {event_title}")
+    logging.info(f"Billet pour {user_email} - {event_title}")
 
     try:
         # Générer QR code
-        qr_img = qrcode.make(qr_token, box_size=10, border=2)
+        qr_img = qrcode.make(qr_code, box_size=10, border=2)
         qr_buffer = BytesIO()
         qr_img.save(qr_buffer, format="PNG")
         qr_buffer.seek(0)
@@ -815,38 +847,28 @@ def process_email(request):
         qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode('utf-8')
         qr_buffer.seek(0)
 
-        # ✅ CONDITION : GÉNÉRER BADGE SEULEMENT SI PREMIER ENVOI OU BADGE ABSENT
         bucket_name = "event-athena-prod-plaform.firebasestorage.app"
         badge_blob = storage_client.bucket(bucket_name).blob(f"tickets/{event_id}/{qr_token}.zpl")
         badge_exists = badge_blob.exists()
 
-        logging.info(f"🔍 Badge existant dans GCS: {badge_exists}")
+        logging.info(f"Badge existant dans GCS: {badge_exists}")
 
-        if data["type"] == "EVENT_REGISTRATION_CONFIRMED" or not badge_exists:
-            logging.info("📄 Génération badge ZPL (premier envoi ou badge absent)...")
-
-            zpl_content = _build_zpl(
-                qr_token=qr_token,
-                user_first_name=user_first_name,
-                user_last_name=user_last_name,
-                company_name=company_name,
-                user_role=user_role,
+        if data["type"] == "EVENT_REGISTRATION_CONFIRMED":
+            logging.info("Premier envoi → Génération badge ZPL")
+            _generate_and_upload_zpl(
+                bucket_name, event_id, qr_token,
+                user_first_name, user_last_name, company_name, user_role
             )
-            logging.info("✅ Badge ZPL généré")
 
-            # ── Upload GCS ────────────────────────────────────────────
-            logging.info(f"🪣 Bucket cible: {bucket_name}")
-            try:
-                bucket = storage_client.bucket(bucket_name)
-                blob = bucket.blob(f"tickets/{event_id}/{qr_token}.zpl")
-                blob.upload_from_string(zpl_content.encode("utf-8"), content_type="text/plain; charset=utf-8")
-                logging.info(f"✅ Upload OK: tickets/{event_id}/{qr_token}.zpl")
-            except Exception as upload_err:
-                logging.error(f"❌ Erreur upload GCS: {upload_err}")
-                raise
-
-        else:
-            logging.info("🔄 Retry détecté (RESEND_REGISTRATION_CONFIRMED) → Skip génération badge")
+        elif data["type"] == "RESEND_REGISTRATION_CONFIRMED":
+            if not badge_exists:
+                logging.info("Renvoi détecté mais badge absent → Régénération badge ZPL")
+                _generate_and_upload_zpl(
+                    bucket_name, event_id, qr_token,
+                    user_first_name, user_last_name, company_name, user_role
+                )
+            else:
+                logging.info("Renvoi détecté → Skip génération badge")
 
         # ── Envoi email ───────────────────────────────────────────────
         send_ticket_email_with_qr(
@@ -858,7 +880,7 @@ def process_email(request):
         return ("OK", 200)
 
     except Exception as e:
-        logging.error(f"❌ Échec génération/envoi billet: {str(e)}")
+        logging.error(f"Échec génération/envoi billet: {str(e)}")
         return (f"Internal Server Error: {str(e)}", 500)
 
 
@@ -877,7 +899,8 @@ def send_ticket_email_with_qr(
     event_location: str,
     qr_base64: str,
     registration_id: str,
-    qr_token: str
+    qr_token: str,
+    event_image_url: str = None,
 ):
     SMTP_HOST     = os.environ.get("SMTP_HOST", "smtp.zeptomail.com")
     SMTP_PORT     = int(os.environ.get("SMTP_PORT", "587"))
@@ -890,11 +913,11 @@ def send_ticket_email_with_qr(
 
     # ── Infos inscription ──
     info_rows = (
-        _info_row("&#128100;", "Participant", f"{first_name} {last_name}")
-        + _info_row("&#128231;", "Email",      email)
-        + _info_row("&#127881;", "Événement",  f"<strong>{event_title}</strong>")
-        + _info_row("&#128197;", "Date",       event_start)
-        + _info_row("&#128205;", "Lieu",       event_location)
+        _info_row("", "Visiteur", f"{first_name} {last_name}")
+        + _info_row("", "Email",      email)
+        + _info_row("", "Événement",  f"<strong>{event_title}</strong>")
+        + _info_row("", "Date",       event_start)
+        + _info_row("", "Lieu",       event_location)
     )
 
     # ── Consignes de sécurité ──
@@ -912,6 +935,7 @@ def send_ticket_email_with_qr(
             title="Confirmation d'inscription",
             subtitle=f"Votre billet pour {event_title}",
             email_type_label="Billet événement",
+            hero_image_url=event_image_url or "",
         )
         + _body_open(
             greeting=f"Bonjour {first_name} {last_name},",
@@ -966,9 +990,9 @@ Cordialement,
 L'équipe Athena Event
 
 ---
-📞 +261 38 32 046 13
-📧 contact@clearmind-analytics.com
-🌐 www.athena-event.com
++261 38 32 046 13
+sales@athena-event.com
+www.athena-event.com
 
 © {datetime.now().year} Athena Event by Clearmind Analytics
 Antananarivo, Madagascar
@@ -1004,9 +1028,9 @@ Antananarivo, Madagascar
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        logging.info(f"✅ Email billet envoyé à {email}")
+        logging.info(f"Email billet envoyé à {email}")
     except Exception as e:
-        logging.error(f"❌ Erreur envoi email : {e}")
+        logging.error(f"Erreur envoi email : {e}")
         raise
 
 
@@ -1022,6 +1046,7 @@ def send_ticket_email_invited(
     qr_base64: str,
     registration_id: str,
     qr_token: str,
+    event_image_url: str = None,
 ):
     """
     Email envoyé au commanditaire (emailDestinateur) pour un billet
@@ -1039,16 +1064,16 @@ def send_ticket_email_invited(
     badge_owner_full = f"{badge_owner_first_name} {badge_owner_last_name}"
 
     info_rows = (
-        _info_row("&#128100;", "Participant",  badge_owner_full)
-        + _info_row("&#127881;", "Événement",  f"<strong>{event_title}</strong>")
-        + _info_row("&#128197;", "Date",        event_start)
-        + _info_row("&#128205;", "Lieu",        event_location)
+        _info_row("", "Visiteur",  badge_owner_full)
+        + _info_row("", "Événement",  f"<strong>{event_title}</strong>")
+        + _info_row("", "Date",        event_start)
+        + _info_row("", "Lieu",        event_location)
     )
 
     security_items = [
         f"Ce billet est au nom de <strong>{badge_owner_full}</strong>",
         "<strong>Ne partagez pas ce QR code</strong> en dehors de la personne concernée",
-        "Ce code est <strong>strictement personnel</strong> et identifie le participant de manière unique",
+        "Ce code est <strong>strictement personnel</strong> et identifie le visiteur de manière unique",
         "Toute personne en possession de ce code peut accéder à l'événement à sa place",
         "En cas de perte ou de vol, <strong>contactez-nous immédiatement</strong>",
     ]
@@ -1058,6 +1083,7 @@ def send_ticket_email_invited(
             title="Confirmation d'inscription",
             subtitle=f"Billet pour {event_title}",
             email_type_label="Billet événement",
+            hero_image_url=event_image_url or "",
         )
         + _body_open(
             greeting=f"Bonjour {destinateur_first_name} {destinateur_last_name},",
@@ -1095,7 +1121,7 @@ Nous avons le plaisir de vous confirmer l'inscription de {badge_owner_full}
 
 DÉTAILS DE L'INSCRIPTION
 
-Participant : {badge_owner_full}
+Visiteur : {badge_owner_full}
 Événement   : {event_title}
 Date        : {event_start}
 Lieu        : {event_location}
@@ -1105,7 +1131,7 @@ Lieu        : {event_location}
 CONSIGNES DE SÉCURITÉ :
 - Ce billet est au nom de {badge_owner_full}
 - Ne partagez pas ce QR code en dehors de la personne concernée
-- Ce code est strictement personnel et identifie le participant de manière unique
+- Ce code est strictement personnel et identifie le visiteur de manière unique
 - Toute personne en possession de ce code peut accéder à l'événement à sa place
 - En cas de perte ou de vol, contactez-nous immédiatement
 
@@ -1113,9 +1139,9 @@ Cordialement,
 L'équipe Athena Event
 
 ---
-📞 +261 38 32 046 13
-📧 contact@clearmind-analytics.com
-🌐 www.athena-event.com
++261 38 32 046 13
+sales@athena-event.com
+www.athena-event.com
 
 © {datetime.now().year} Athena Event by Clearmind Analytics
 Antananarivo, Madagascar
@@ -1148,7 +1174,7 @@ Antananarivo, Madagascar
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        logging.info(f"✅ Email billet invité envoyé à {email} (billet: {badge_owner_full})")
+        logging.info(f"Email billet invité envoyé à {email} (billet: {badge_owner_full})")
     except Exception as e:
-        logging.error(f"❌ Erreur envoi email : {e}")
+        logging.error(f"Erreur envoi email : {e}")
         raise
