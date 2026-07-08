@@ -67,3 +67,20 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+emulator-data/*
+
+**/venv/
+venv/
+
+firebase-export-*/
+firebase-export-178*/
+
+# Cache Python dans les sous-dossiers
+**/__pycache__/
+
+# Si tu veux ignorer spécifiquement ces dossiers
+functions-email-firebase/__pycache__/
+functions-ticket-firebase/__pycache__/
+functions-ticket-firebase/templates/__pycache__/
+functions-ticket-firebase2/__pycache__/
