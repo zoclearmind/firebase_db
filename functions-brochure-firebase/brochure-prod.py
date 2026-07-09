@@ -26,7 +26,8 @@ BUCKET_NAME = os.environ.get("BUCKET_NAME", "athena-event-prod")
 TEMPLATES = {
     1: "template_1.html",  # Corporate Élégant
     2: "template_2.html",  # Modern Professional
-    3: "template_3.html"   # Business Professional
+    3: "template_3.html",  # Business Professional
+    4: "template_4.html"   # Confirmation d'inscription événementielle
 }
 
 
@@ -34,7 +35,7 @@ def load_template(template_num):
     """Charge le template HTML depuis le fichier"""
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2 ou 3.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3 ou 4.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -56,11 +57,36 @@ def render_template(template_html, data):
     # APRÈS
     custom_content = data.get("customContent", "")
     if custom_content is None or custom_content.strip() == "":
-        event_name = data.get("event_name", "l'événement")
-        custom_content = f"Merci pour cet échange enrichissant lors de {event_name} ! N'hésitez pas à nous contacter pour toute question ou besoin d'information complémentaire."
+        if data.get("type") == "EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION":
+            custom_content = (
+                "Veuillez confirmer ou refuser votre présence à l'événement ci-dessous. "
+                "Votre réponse sera enregistrée immédiatement."
+            )
+        else:
+            event_name = data.get("event_name", "l'événement")
+            custom_content = f"Merci pour cet échange enrichissant lors de {event_name} ! N'hésitez pas à nous contacter pour toute question ou besoin d'information complémentaire."
     
 
     rendered = rendered.replace("{{customContent}}", custom_content)
+
+    # ── Valeurs par défaut pour l'image d'événement et le nom d'événement ──
+    data["eventImageUrl"] = data.get("eventImageUrl") or "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80&auto=format&fit=crop"
+    data["event_name"] = data.get("event_name", "Événement Athena")
+
+    # ── Remplacer les variables de l'événement et de confirmation ──
+    extra_fields = {
+        "confirmationLink": data.get("confirmationLink", "#"),
+        "declineLink": data.get("declineLink", "#"),
+        "event_name": data.get("event_name", ""),
+        "eventStartDate": data.get("eventStartDate", ""),
+        "eventEndDate": data.get("eventEndDate", ""),
+        "eventDescription": data.get("eventDescription", ""),
+        "eventCapacity": data.get("eventCapacity", ""),
+        "limitDaySuggestion": data.get("limitDaySuggestion", ""),
+        "eventImageUrl": data.get("eventImageUrl", "")
+    }
+    for key, value in extra_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
 
     # 🔍 DEBUG : Voir le HTML final autour de customContent
     import re
