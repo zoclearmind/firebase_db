@@ -18,17 +18,26 @@ def send_brochure_email_smtp(data):
     Paramètre : data (dict) contenant tous les détails de l'email
     """
     # ── Validation des données obligatoires ──
-    required_fields = ["recipients", "subject", "staticTemplateNum", "company_name"]
+    event_type = data.get("type", "")
+    required_fields = ["recipients", "subject", "company_name"]
+    if event_type == "BROCHURE":
+        required_fields.append("staticTemplateNum")
     for field in required_fields:
         if field not in data:
             raise ValueError(f"Champ obligatoire manquant: {field}")
     
     recipients = data["recipients"]
     subject = data["subject"]
-    template_num = int(data["staticTemplateNum"])
+    if event_type == "BROCHURE":
+        template_num = int(data["staticTemplateNum"])
+    else:
+        template_num = int(data.get("staticTemplateNum", 4))
     attachment_urls = data.get("attachmentUrls", [])
     
-    print(f"📧 Préparation email brochure (Template {template_num}) pour {recipients}")
+    print(f"📧 Préparation email type {event_type or 'UNKNOWN'} (Template {template_num}) pour {recipients}")
+
+    if event_type == "EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION":
+        data.setdefault("_hide_attachments_section", True)
     
     # Détecter si on a des PDFs (pour cacher la section visuelle)
     has_pdfs = any(is_pdf_url(url) for url in (attachment_urls or []) if url)

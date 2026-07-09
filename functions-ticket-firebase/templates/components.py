@@ -74,7 +74,7 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
         <!--[if mso | IE]>
         <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
-                style="width:600px;height:200px;position:absolute;">
+                style="width:680px;height:200px;position:absolute;">
           <v:fill type="frame" src="{bg_url}" color="#1a1a2e"/>
           <v:textbox inset="0,0,0,0">
         <![endif]-->

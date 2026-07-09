@@ -344,7 +344,8 @@ def send_brochure_email(request):
         # Parser le JSON
         data = json.loads(message_data)
         
-        print(f"📨 Réception message brochure: {data.get('subject', 'Sans objet')}")
+        event_type = data.get("type")
+        print(f"📨 Réception message: {data.get('subject', 'Sans objet')}")
         print(f"📋 Données reçues:")
         print(f"   - firstName: {data.get('firstName', 'N/A')}")
         print(f"   - lastName: {data.get('lastName', 'N/A')}")
@@ -352,10 +353,17 @@ def send_brochure_email(request):
         print(f"   - company_logo: {data.get('company_logo', 'N/A')}")
         print(f"   - customContent: {'Fourni' if data.get('customContent') else 'Non fourni (null/vide)'}")
         print(f"   - attachmentUrls: {len(data.get('attachmentUrls', [])) if data.get('attachmentUrls') else 0} fichier(s)")
+        print(f"   - type: {event_type}")
         
         # Vérifier le type
-        if data.get("type") != "BROCHURE":
-            print(f"⚠️ Type incorrect: {data.get('type')}, attendu: BROCHURE")
+        if event_type == "BROCHURE":
+            pass
+        elif event_type == "EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION":
+            print("   • Nouveau type de confirmation détecté")
+            data.setdefault("staticTemplateNum", 4)
+            data.setdefault("_hide_attachments_section", True)
+        else:
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE ou EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION")
             return ("OK: type ignoré", 200)
 
         # Envoyer l'email

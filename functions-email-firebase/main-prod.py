@@ -74,9 +74,9 @@ def _base_styles() -> str:
         .ExternalClass, .ExternalClass p, .ExternalClass span,
         .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height:100%; }
 
-        /* ── Overrides mobile (max 600px) ──
+        /* ── Overrides mobile (max 680px) ──
            Chaque classe correspond à un élément identifiable dans le HTML ci-dessous */
-        @media only screen and (max-width:600px) {
+        @media only screen and (max-width:680px) {
 
             /* Email pleine largeur sur mobile, sans border-radius */
             .email-outer-td { padding:0 !important; }
@@ -175,7 +175,7 @@ def _email_open(preheader_text: str = "") -> str:
     <td class="email-outer-td" align="center" style="padding:32px 16px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0"
              class="email-shell"
-             style="width:600px;max-width:600px;background-color:#ffffff;
+             style="width:680px;max-width:680px;background-color:#ffffff;
                     border-radius:16px;overflow:hidden;
                     box-shadow:0 8px 40px rgba(0,0,0,0.13);">
 """
@@ -259,7 +259,7 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
         <!--[if mso | IE]>
         <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
-                style="width:600px;height:200px;position:absolute;">
+                style="width:680px;height:200px;position:absolute;">
           <v:fill type="frame" src="{bg_url}" color="#1a1a2e"/>
           <v:textbox inset="0,0,0,0">
         <![endif]-->

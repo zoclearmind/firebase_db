@@ -1,216 +1,450 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
     <title>{{company_name}}</title>
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
     <style>
-        @media (prefers-color-scheme: dark) {
-            .email-wrapper { background-color: #f5f5f5 !important; }
-            .email-container { background-color: #ffffff !important; }
+        /* Reset email — ne pas modifier */
+        body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+        table, td           { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+        img                 { -ms-interpolation-mode:bicubic; border:0; display:block; }
+        .ReadMsgBody        { width:100%; }
+        .ExternalClass      { width:100%; }
+        .ExternalClass, .ExternalClass p, .ExternalClass span,
+        .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height:100%; }
+
+        /* ── Interactions boutons (survol / clic) ──
+           Le JS est interdit dans les emails → on utilise :hover / :active.
+           Oui → vert, Non → rouge. Ignoré par Outlook Windows (bouton statique). */
+        .cta-yes:hover, .cta-yes:active {
+            background-color:#16a34a !important;
+            border-color:#166534 !important;
+            color:#ffffff !important;
+        }
+        .cta-no:hover, .cta-no:active {
+            background-color:#dc2626 !important;
+            border-color:#991b1b !important;
+            color:#ffffff !important;
+        }
+
+        /* ── Overrides mobile (max 680px) ── */
+        @media only screen and (max-width:680px) {
+
+            .email-outer-td { padding:0 !important; }
+            .email-shell    { width:100% !important; min-width:100% !important;
+                               border-radius:0 !important; }
+
+            .hero-td        { height:185px !important; padding:20px 16px !important; }
+
+            .logo-brand-td  { display:block !important; width:100% !important; }
+            .logo-img       { width:36px !important; height:36px !important; }
+            .brand-name     { font-size:17px !important; }
+            .brand-sub      { font-size:9px !important; }
+
+            .ref-badge-td    { display:block !important; width:100% !important;
+                               text-align:left !important;
+                               padding-top:10px !important; padding-left:0 !important; }
+            .ref-badge-inner { text-align:left !important; }
+
+            .hero-title     { font-size:17px !important; }
+            .hero-sub       { font-size:11px !important; }
+
+            .body-td        { padding:24px 16px 0 16px !important; }
+
+            .card-td        { padding:16px !important; }
+
+            .cta-td         { padding:14px 24px !important; }
+            .cta-link       { font-size:14px !important; }
+
+            /* Boutons Oui / Non : empilés verticalement sur mobile */
+            .btn-table      { width:100% !important; }
+            .btn-td         { display:block !important; width:100% !important; }
+            .btn-td-right   { padding-top:12px !important; }
+            .btn-spacer     { display:none !important; }
+            .btn-td .cta-link { display:block !important; text-align:center !important; }
+
+            .footer-td      { padding:22px 16px !important; }
+
+            .below-note     { padding:0 16px !important; }
         }
     </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Georgia', serif; background-color: #e5e7eb;">
-    
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #e5e7eb;">
+<body style="margin:0;padding:0;background-color:#ede9de;word-spacing:normal;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;color:#fafafa;line-height:1px;">Veuillez r&eacute;pondre &agrave; cette demande pour valider votre participation &agrave; l'&eacute;v&eacute;nement.&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;&nbsp;&#8204;</div>
+<!--[if mso | IE]>
+<table role="presentation" border="0" cellpadding="0" cellspacing="0"
+       width="100%" style="background-color:#ede9de;"><tr><td>
+<![endif]-->
+<table role="presentation" border="0" cellpadding="0" cellspacing="0"
+       width="100%" style="background-color:#ede9de;">
+  <tr>
+    <td class="email-outer-td" align="center" style="padding:32px 16px;">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+             class="email-shell"
+             style="width:680px;max-width:680px;background-color:#ffffff;
+                    border-radius:16px;overflow:hidden;
+                    box-shadow:0 8px 40px rgba(0,0,0,0.13);">
+
+        <!-- ══════════════ HERO ══════════════ -->
+        <!--[if mso | IE]><tr><td style="background-color:#1a1a2e;padding:0;"><![endif]-->
         <tr>
-            <td align="center" style="padding: 30px 20px;">
-                <table width="680" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; box-shadow: 0 2px 20px rgba(0,0,0,0.1);">
-                    
-                    <!-- Barre supérieure noire -->
-                    <tr>
-                        <td style="background-color: #000000; height: 8px;"></td>
-                    </tr>
+          <td class="hero-td"
+              background="{{eventImageUrl}}"
+              style="background-color:#1a1a2e;
+                     background-image:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url('{{eventImageUrl}}'),url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80&auto=format&fit=crop');
+                     background-size:cover;background-position:center center;
+                     background-repeat:no-repeat;
+                     padding:28px 32px;height:200px;vertical-align:middle;">
 
-                    <!-- Header avec logo + tagline + contexte -->
-                    <tr>
-                        <td align="center" style="padding: 40px 40px 20px 40px;">
-                            <img src="{{company_logo}}" alt="{{company_name}}" 
-                                 style="max-width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 20px;">
-                            <h2 style="margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 2px; font-weight: 400;">
-                                {{company_name}}
-                            </h2>
-                            <p style="margin: 5px 0 0; font-size: 12px; color: #9ca3af; font-style: italic;">
-                                Votre partenaire stratégique
-                            </p>
-                        </td>
-                    </tr>
-                    
-                    <!-- Contexte événement -->
-                    <tr>
-                        <td style="padding: 0 60px 30px; border-bottom: 2px solid #e5e7eb;">
-                            <p style="margin: 0; font-size: 13px; color: #6b7280; text-align: center;">
-                                Suite à notre rencontre lors de <strong>l'événement Athena</strong>
-                            </p>
-                        </td>
-                    </tr>
+            <!--[if mso | IE]>
+            <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
+                    style="width:680px;height:200px;position:absolute;">
+              <v:fill type="frame" src="{{eventImageUrl}}" color="#1a1a2e"/>
+              <v:textbox inset="0,0,0,0">
+            <![endif]-->
 
-                    <!-- Titre personnalisé et chaleureux -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+              <!-- Ligne 1 : Logo + marque + badge type email -->
+              <tr>
+                <td class="logo-brand-td" valign="middle" style="vertical-align:middle;">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td style="padding: 40px 60px 20px;">
-                            <h1 style="margin: 0; font-size: 32px; font-weight: 400; color: #111827; line-height: 1.3; text-align: center; font-family: 'Georgia', serif;">
-                                Ravi de vous avoir rencontré, {{firstName}} ! 🤝
-                            </h1>
-                            <p style="margin: 15px 0 0; font-size: 16px; color: #6b7280; text-align: center;">
-                                Voici les ressources dont nous avons discuté
-                            </p>
-                            <div style="width: 60px; height: 3px; background-color: #000000; margin: 25px auto;"></div>
-                        </td>
+                      <td valign="middle" style="padding-right:12px;vertical-align:middle;">
+                        <img class="logo-img" src="https://athena-event.com/logo.png" alt="Athena Event"
+                             width="44" height="44"
+                             style="width:44px;height:44px;border-radius:10px;
+                                    border:1.5px solid #7a6500;display:block;" />
+                      </td>
+                      <td valign="middle" style="vertical-align:middle;">
+                        <div class="brand-name"
+                             style="font-family:Georgia,'Times New Roman',serif;
+                                    font-size:21px;font-weight:700;color:#ffffff;
+                                    line-height:1.2;margin:0;">
+                          Athena Event
+                        </div>
+                        <div class="brand-sub"
+                             style="font-family:Arial,sans-serif;font-size:10px;
+                                    color:#c9a800;letter-spacing:2.5px;
+                                    text-transform:uppercase;margin-top:3px;">
+                          by Clearmind Analytics
+                        </div>
+                      </td>
                     </tr>
-
-                    <!-- Message court et scannable -->
+                  </table>
+                </td>
+                <td class="ref-badge-td" valign="middle" align="right"
+                    style="vertical-align:middle;padding-left:12px;">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         align="right">
                     <tr>
-                        <td style="padding: 0 60px 30px;">
-                            <p style="margin: 0 0 15px; font-size: 17px; color: #111827; font-weight: 500;">
-                                Bonjour {{firstName}},
-                            </p>
-                            <p style="margin: 0 0 15px; font-size: 16px; color: #4b5563; line-height: 1.7;">
-                                Merci pour cet échange enrichissant lors de l'événement Athena ! 
-                                Comme promis, vous trouverez ci-joint notre documentation complète.
-                            </p>
-                            <p style="margin: 0; font-size: 16px; color: #4b5563; line-height: 1.7;">
-                                {{customContent}}
-                            </p>
-                        </td>
+                      <td class="ref-badge-inner"
+                          style="background-color:#0a0a14;border:1px solid #4d3f00;
+                                 border-radius:8px;padding:8px 14px;text-align:right;">
+                        <div style="font-family:Arial,sans-serif;font-size:11px;
+                                    font-weight:600;color:#fde047;letter-spacing:0.5px;
+                                    line-height:1.3;">
+                          Confirmation requise
+                        </div>
+                      </td>
                     </tr>
+                  </table>
+                </td>
+              </tr>
 
-                    <!-- Documents PDF - Liste claire -->
-                    <tr>
-                        <td style="padding: 30px 60px; background-color: #f9fafb;">
-                            <h3 style="margin: 0 0 20px; font-size: 18px; font-weight: 600; color: #111827;">
-                                📎 Documents à télécharger
-                            </h3>
-                            
-                            <!-- Document 1 -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px;">
-                                <tr>
-                                    <td style="padding: 15px 20px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;">
-                                        <table width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td width="40" valign="middle">
-                                                    <div style="width: 36px; height: 36px; background-color: #000000; border-radius: 6px; text-align: center; line-height: 36px;">
-                                                        <span style="color: #ffffff; font-size: 16px;">📄</span>
-                                                    </div>
-                                                </td>
-                                                <td style="padding-left: 15px;">
-                                                    <div style="font-size: 15px; font-weight: 600; color: #111827;">
-                                                        Catalogue produits 2026
-                                                    </div>
-                                                    <div style="font-size: 13px; color: #6b7280;">
-                                                        Notre offre complète • PDF
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
+              <!-- Spacer -->
+              <tr>
+                <td colspan="2" style="height:18px;font-size:1px;line-height:1px;">&nbsp;</td>
+              </tr>
 
-                            <!-- Document 2 -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td style="padding: 15px 20px; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px;">
-                                        <table width="100%" cellpadding="0" cellspacing="0">
-                                            <tr>
-                                                <td width="40" valign="middle">
-                                                    <div style="width: 36px; height: 36px; background-color: #000000; border-radius: 6px; text-align: center; line-height: 36px;">
-                                                        <span style="color: #ffffff; font-size: 16px;">💰</span>
-                                                    </div>
-                                                </td>
-                                                <td style="padding-left: 15px;">
-                                                    <div style="font-size: 15px; font-weight: 600; color: #111827;">
-                                                        Grille tarifaire
-                                                    </div>
-                                                    <div style="font-size: 13px; color: #6b7280;">
-                                                        Nos tarifs et formules • PDF
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="margin: 15px 0 0; font-size: 13px; color: #6b7280; font-style: italic;">
-                                💡 Les documents sont disponibles en pièces jointes de cet email
-                            </p>
-                        </td>
-                    </tr>
+              <!-- Ligne 2 : Titre + sous-titre -->
+              <tr>
+                <td colspan="2">
+                  <div style="width:36px;height:2px;background-color:#fde047;
+                              margin-bottom:10px;"></div>
+                  <div class="hero-title"
+                       style="font-family:Georgia,'Times New Roman',serif;
+                              font-size:20px;font-weight:700;color:#ffffff;
+                              line-height:1.3;margin:0;">
+                    Confirmation d'inscription
+                  </div>
+                  <div class="hero-sub"
+                       style="font-family:Arial,sans-serif;font-size:12px;
+                              color:#cccccc;margin-top:6px;letter-spacing:0.3px;">
+                    Veuillez r&eacute;pondre &agrave; cette demande pour valider votre participation &agrave; l'&eacute;v&eacute;nement
+                  </div>
+                </td>
+              </tr>
 
-                    <!-- Call-to-Action principal -->
-                    <tr>
-                        <td align="center" style="padding: 40px 60px;">
-                            <p style="margin: 0 0 20px; font-size: 16px; color: #4b5563; line-height: 1.7;">
-                                Des questions ? Envie d'aller plus loin ?
-                            </p>
-                            <table cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td style="background-color: #000000; border-radius: 6px; padding: 16px 40px;">
-                                        <a href="mailto:{{company_email}}" style="font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; display: block;">
-                                            Planifier un échange →
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                            <p style="margin: 15px 0 0; font-size: 13px; color: #6b7280;">
-                                Ou répondez directement à cet email
-                            </p>
-                        </td>
-                    </tr>
+            </table>
 
-                    <!-- Message de clôture -->
-                    <tr>
-                        <td style="padding: 0 60px 40px;">
-                            <p style="margin: 0 0 15px; font-size: 16px; color: #4b5563; line-height: 1.7;">
-                                Nous sommes impatients de pouvoir contribuer à votre réussite.
-                            </p>
-                            <p style="margin: 0; font-size: 16px; color: #111827;">
-                                Bien cordialement,
-                            </p>
-                            <p style="margin: 10px 0 0; font-size: 15px; color: #4b5563;">
-                                <strong>L'équipe {{company_name}}</strong>
-                            </p>
-                        </td>
-                    </tr>
-
-                    <!-- Footer amélioré -->
-                    <tr>
-                        <td style="padding: 40px 60px; background-color: #f9fafb; border-top: 1px solid #e5e7eb;">
-                            <table width="100%" cellpadding="0" cellspacing="0">
-                                <tr>
-                                    <td width="50%" valign="top">
-                                        <p style="margin: 0 0 8px; font-size: 14px; color: #111827; font-weight: 600;">
-                                            {{company_name}}
-                                        </p>
-                                        <p style="margin: 0 0 5px; font-size: 13px; color: #6b7280;">
-                                            📧 {{company_email}}
-                                        </p>
-                                    </td>
-                                    <td width="50%" align="right" valign="top">
-                                        <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
-                                            Cet email vous a été envoyé car vous avez<br>visité notre stand lors d'Athena Event.
-                                        </p>
-                                        <p style="margin: 10px 0 0; font-size: 12px;">
-                                            <a href="#" style="color: #111827; text-decoration: underline;">Se désinscrire</a>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="padding-top: 30px; border-top: 1px solid #e5e7eb;">
-                                        <p style="margin: 0; font-size: 12px; color: #9ca3af; text-align: center;">
-                                            © 2026 {{company_name}}. Tous droits réservés.
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-
-                </table>
-            </td>
+            <!--[if mso | IE]></v:textbox></v:rect><![endif]-->
+          </td>
         </tr>
-    </table>
+        <!--[if mso | IE]></td></tr><![endif]-->
 
+        <!-- Bande dorée accent sous le hero -->
+        <tr>
+          <td style="height:4px;font-size:4px;line-height:4px;
+                     background-color:#fbbf24;">&nbsp;</td>
+        </tr>
+
+        <!-- ══════════════ CORPS ══════════════ -->
+        <tr>
+          <td class="body-td" style="padding:36px 36px 0 36px;">
+            <p style="margin:0 0 8px 0;font-family:Georgia,'Times New Roman',serif;
+                      font-size:19px;font-weight:700;color:#1c1917;line-height:1.3;">
+              Bonjour {{firstName}},
+            </p>
+            <p style="margin:0 0 8px 0;font-family:Arial,sans-serif;
+                      font-size:15px;color:#44403c;font-weight:700;line-height:1.75;">
+              Votre pr&eacute;sence &agrave; l'&eacute;v&eacute;nement suivant doit &ecirc;tre confirm&eacute;e.
+            </p>
+            <p style="margin:0 0 24px 0;font-family:Arial,sans-serif;
+                      font-size:15px;color:#57534e;line-height:1.75;">
+              Cliquez sur l'une des r&eacute;ponses ci-dessous pour confirmer votre participation
+              et valider votre inscription.
+            </p>
+
+            <!-- Card détails de l'événement -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                   width="100%" style="margin:24px 0;">
+              <tr>
+                <td class="card-td"
+                    style="background-color:#fffbeb;border-radius:10px;
+                           border:1px solid #fde68a;padding:20px 22px;">
+                  <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
+                             font-weight:700;color:#b45309;text-transform:uppercase;
+                             letter-spacing:2.5px;">
+                    D&Eacute;TAILS DE L'&Eacute;V&Eacute;NEMENT
+                  </p>
+
+                  <p style="margin:0 0 10px 0;font-family:Georgia,'Times New Roman',serif;
+                            font-size:18px;font-weight:700;color:#1c1917;line-height:1.3;">
+                    {{event_name}}
+                  </p>
+                  <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:14px;
+                            color:#57534e;line-height:1.6;">
+                    {{eventDescription}}
+                  </p>
+
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         width="100%" style="margin-bottom:10px;">
+                    <tr>
+                      <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
+                                               color:#57534e;line-height:1.5;vertical-align:top;">
+                        <strong style="color:#44403c;">Date de d&eacute;but&nbsp;:</strong> {{eventStartDate}}
+                      </td>
+                    </tr>
+                  </table>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         width="100%" style="margin-bottom:10px;">
+                    <tr>
+                      <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
+                                               color:#57534e;line-height:1.5;vertical-align:top;">
+                        <strong style="color:#44403c;">Date de fin&nbsp;:</strong> {{eventEndDate}}
+                      </td>
+                    </tr>
+                  </table>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         width="100%" style="margin-bottom:10px;">
+                    <tr>
+                      <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
+                                               color:#57534e;line-height:1.5;vertical-align:top;">
+                        <strong style="color:#44403c;">Capacit&eacute;&nbsp;:</strong> {{eventCapacity}}
+                      </td>
+                    </tr>
+                  </table>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         width="100%">
+                    <tr>
+                      <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
+                                               color:#57534e;line-height:1.5;vertical-align:top;">
+                        <strong style="color:#44403c;">Limite sugg&eacute;r&eacute;e&nbsp;:</strong> {{limitDaySuggestion}}
+                      </td>
+                    </tr>
+                  </table>
+
+                </td>
+              </tr>
+            </table>
+
+            <!-- Boutons Oui / Non côte à côte -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                   width="100%" style="margin:28px 0 8px 0;">
+              <tr>
+                <td align="center">
+                  <!--[if mso | IE]>
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td>
+                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                                     xmlns:w="urn:schemas-microsoft-com:office:word"
+                                     href="{{confirmationLink}}"
+                                     style="height:50px;v-text-anchor:middle;width:240px;"
+                                     arcsize="20%" strokecolor="#fde047" strokeweight="1pt"
+                                     fillcolor="#1a1a2e">
+                          <w:anchorlock/>
+                          <center style="color:#fde047;font-family:Arial,sans-serif;
+                                         font-size:15px;font-weight:bold;">
+                            Oui, je confirme
+                          </center>
+                        </v:roundrect>
+                      </td>
+                      <td width="14">&nbsp;</td>
+                      <td>
+                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                                     xmlns:w="urn:schemas-microsoft-com:office:word"
+                                     href="{{declineLink}}"
+                                     style="height:50px;v-text-anchor:middle;width:240px;"
+                                     arcsize="20%" strokecolor="#d6d3d1" strokeweight="1pt"
+                                     fillcolor="#ffffff">
+                          <w:anchorlock/>
+                          <center style="color:#44403c;font-family:Arial,sans-serif;
+                                         font-size:15px;font-weight:bold;">
+                            Non, je d&eacute;cline
+                          </center>
+                        </v:roundrect>
+                      </td>
+                    </tr>
+                  </table>
+                  <![endif]-->
+                  <!--[if !mso]><!-->
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                         class="btn-table" style="mso-hide:all;">
+                    <tr>
+                      <td class="btn-td" align="center">
+                        <a href="{{confirmationLink}}" class="cta-link cta-yes" target="_blank"
+                           style="display:inline-block;background-color:#1a1a2e;
+                                  color:#fde047;font-family:Arial,sans-serif;font-size:15px;
+                                  font-weight:700;text-decoration:none;border-radius:10px;
+                                  padding:16px 36px;border:1px solid #3a3a00;
+                                  transition:background-color .15s ease,color .15s ease,border-color .15s ease;">
+                          Oui, je confirme
+                        </a>
+                      </td>
+                      <td class="btn-spacer" width="14" style="font-size:1px;line-height:1px;">&nbsp;</td>
+                      <td class="btn-td btn-td-right" align="center">
+                        <a href="{{declineLink}}" class="cta-link cta-no" target="_blank"
+                           style="display:inline-block;background-color:#ffffff;
+                                  color:#44403c;font-family:Arial,sans-serif;font-size:15px;
+                                  font-weight:700;text-decoration:none;border-radius:10px;
+                                  padding:16px 36px;border:1px solid #d6d3d1;
+                                  transition:background-color .15s ease,color .15s ease,border-color .15s ease;">
+                          Non, je d&eacute;cline
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  <!--<![endif]-->
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:24px 0 0 0;font-family:Arial,sans-serif;
+                      font-size:15px;color:#57534e;line-height:1.75;">
+              Nous vous remercions pour votre r&eacute;activit&eacute;.
+              En cas de question, contactez-nous &agrave; tout moment.
+            </p>
+
+            <!-- Séparateur doré + signature -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                   width="100%" style="margin-top:32px;">
+              <tr>
+                <td width="80" style="height:1px;background-color:#fde047;
+                                       font-size:1px;line-height:1px;">&nbsp;</td>
+                <td style="height:1px;background-color:#f0e8c0;
+                           font-size:1px;line-height:1px;">&nbsp;</td>
+              </tr>
+            </table>
+            <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;
+                      font-size:15px;color:#44403c;line-height:1.7;">
+              Cordialement,<br>
+              <strong style="color:#1c1917;">L'&eacute;quipe Athena Event</strong>
+            </p>
+          </td>
+        </tr>
+        <tr><td style="height:36px;font-size:1px;line-height:1px;">&nbsp;</td></tr>
+
+        <!-- ══════════════ FOOTER ══════════════ -->
+        <tr>
+          <td class="footer-td"
+              style="background-color:#fafaf5;border-top:1px solid #f0e8c0;padding:28px 36px;">
+
+            <!-- Logo mini + entreprise -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                   width="100%" style="margin-bottom:18px;">
+              <tr>
+                <td valign="middle" style="vertical-align:middle;">
+                  <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td valign="middle" style="padding-right:10px;vertical-align:middle;">
+                        <img src="https://athena-event.com/logo.png" alt="AE" width="28" height="28"
+                             style="width:28px;height:28px;border-radius:7px;display:block;" />
+                      </td>
+                      <td valign="middle" style="vertical-align:middle;">
+                        <span style="font-family:Georgia,'Times New Roman',serif;
+                                     font-size:14px;font-weight:700;color:#1a1a2e;">
+                          {{company_name}}
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Séparateur -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+                   width="100%" style="margin-bottom:18px;">
+              <tr>
+                <td width="80" style="height:1px;background-color:#fde047;
+                                       font-size:1px;line-height:1px;">&nbsp;</td>
+                <td style="height:1px;background-color:#f0e8c0;
+                           font-size:1px;line-height:1px;">&nbsp;</td>
+              </tr>
+            </table>
+
+            <!-- Contact -->
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;">
+                  <a href="mailto:{{company_email}}" style="color:#78716c;text-decoration:none;">{{company_email}}</a>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+
+      </table><!-- /email-shell -->
+
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td class="below-note" align="center"
+              style="padding:14px 32px 0;font-family:Arial,sans-serif;
+                     font-size:11px;color:#a8a29e;line-height:1.6;">
+            Cet email a &eacute;t&eacute; envoy&eacute; automatiquement par Athena Event.<br>
+            Merci de ne pas y r&eacute;pondre directement.
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+<!--[if mso | IE]></td></tr></table><![endif]-->
 </body>
 </html>

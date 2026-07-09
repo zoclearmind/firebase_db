@@ -17,5 +17,6 @@ BUCKET_NAME = os.environ.get("BUCKET_NAME", "athena-event-prod")
 TEMPLATES = {
     1: "template_1.html",  # Corporate Élégant
     2: "template_2.html",  # Modern Professional
-    3: "template_3.html"   # Business Professional
+    3: "template_3.html",  # Business Professional
+    4: "template_4.html"   # Confirmation d'inscription événementielle
 }

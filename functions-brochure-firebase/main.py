@@ -49,14 +49,22 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
         # 2. Parser le JSON
         data = json.loads(decoded_data)
         
-        print(f"📨 Message brochure reçu: {data.get('subject', 'Sans objet')}")
+        event_type = data.get("type")
+        print(f"📨 Message reçu: {data.get('subject', 'Sans objet')}")
         print(f"   • Entreprise: {data.get('company_name', 'N/A')}")
+        print(f"   • Type: {event_type}")
         print(f"   • Template: {data.get('staticTemplateNum', 'N/A')}")
         print(f"   • Pièces jointes: {len(data.get('attachmentUrls', [])) if data.get('attachmentUrls') else 0}")
         
         # 3. Valider le type
-        if data.get("type") != "BROCHURE":
-            print(f"⚠️ Type incorrect: {data.get('type')}, attendu: BROCHURE")
+        if event_type == "BROCHURE":
+            pass
+        elif event_type == "EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION":
+            print("   • Nouveau type de confirmation détecté")
+            data.setdefault("staticTemplateNum", 4)
+            data.setdefault("_hide_attachments_section", True)
+        else:
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE ou EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)
