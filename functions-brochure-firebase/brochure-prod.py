@@ -388,6 +388,10 @@ def send_brochure_email(request):
             print("   • Nouveau type de confirmation détecté")
             data.setdefault("staticTemplateNum", 4)
             data.setdefault("_hide_attachments_section", True)
+            # Le backend n'envoie pas ces champs pour ce type : valeurs en dur
+            data["subject"] = "Votre place vous attend – confirmez votre venue | Athena Event"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", SMTP_USER)
         else:
             print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE ou EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION")
             return ("OK: type ignoré", 200)
