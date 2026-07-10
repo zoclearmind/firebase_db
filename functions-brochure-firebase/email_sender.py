@@ -73,7 +73,7 @@ def send_brochure_email_smtp(data):
     
     # ── Construire le message MIME ──
     msg = MIMEMultipart("mixed")
-    msg["From"] = formataddr((f"{company_name} via {event_name}", SMTP_USER))
+    msg["From"] = formataddr((f"{event_name} via {company_name}", SMTP_USER))
     msg["To"] = recipients if isinstance(recipients, str) else ", ".join(recipients)
     msg["Subject"] = subject
     

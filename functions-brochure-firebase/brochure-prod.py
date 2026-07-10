@@ -262,7 +262,7 @@ def send_brochure_email_smtp(data):
     # Format: "Nom Entreprise <email@domain.com>"
     
     # APRÈS
-    msg["From"] = formataddr((f"{company_name} via {event_name}", SMTP_USER))
+    msg["From"] = formataddr((f"{event_name} via {company_name}", SMTP_USER))
     msg["To"] = recipients if isinstance(recipients, str) else ", ".join(recipients)
     msg["Subject"] = subject
     
