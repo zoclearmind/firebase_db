@@ -78,6 +78,7 @@ def render_template(template_html, data):
         "confirmationLink": data.get("confirmationLink", "#"),
         "declineLink": data.get("declineLink", "#"),
         "event_name": data.get("event_name", ""),
+        "eventTitle": data.get("eventTitle") or data.get("event_name") or "Événement Athena",
         "eventStartDate": data.get("eventStartDate", ""),
         "eventEndDate": data.get("eventEndDate", ""),
         "eventDescription": data.get("eventDescription", ""),
