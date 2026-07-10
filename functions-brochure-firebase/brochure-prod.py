@@ -27,7 +27,8 @@ TEMPLATES = {
     1: "template_1.html",  # Corporate Élégant
     2: "template_2.html",  # Modern Professional
     3: "template_3.html",  # Business Professional
-    4: "template_4.html"   # Confirmation d'inscription événementielle
+    4: "template_4.html",  # Confirmation d'inscription événementielle
+    5: "email_remerciement.html"  # Remerciement post-événement
 }
 
 
@@ -35,7 +36,7 @@ def load_template(template_num):
     """Charge le template HTML depuis le fichier"""
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3 ou 4.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3, 4 ou 5.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -88,6 +89,36 @@ def render_template(template_html, data):
     }
     for key, value in extra_fields.items():
         rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
+
+    # ── Champs du template remerciement (EVENT_THANK_YOU) ──
+    thank_you_fields = {
+        "greetingPrefix": data.get("greetingPrefix", "Bonjour"),
+        "toFirstName": data.get("toFirstName", ""),
+        "toLastName": data.get("toLastName", ""),
+        "title": data.get("title", ""),
+        "bodyParagraph1": data.get("bodyParagraph1", ""),
+        "bodyParagraph2": data.get("bodyParagraph2", ""),
+        "eventDateRange": data.get("eventDateRange", ""),
+        "eventLocation": data.get("eventLocation", ""),
+        "footerQuote": data.get("footerQuote", ""),
+        "footerOrganizers": data.get("footerOrganizers", ""),
+        "footerOrganizations": data.get("footerOrganizations", ""),
+        "footerPatronage": data.get("footerPatronage", ""),
+        "websiteUrl": data.get("websiteUrl", "#"),
+        "contactEmail": data.get("contactEmail", ""),
+        "unsubscribeUrl": data.get("unsubscribeUrl", "#"),
+    }
+    for key, value in thank_you_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
+
+    # ── Grille des partenaires (section retirée si aucun partenaire) ──
+    import re as _re
+    partners = data.get("partners") or []
+    if partners and "{{PARTNERS_BLOCK}}" in rendered:
+        rendered = rendered.replace("{{PARTNERS_BLOCK}}", build_partners_block(partners))
+    else:
+        pattern = r'<!-- PARTNERS_SECTION_START -->.*?<!-- PARTNERS_SECTION_END -->'
+        rendered = _re.sub(pattern, '', rendered, flags=_re.DOTALL)
 
     # 🔍 DEBUG : Voir le HTML final autour de customContent
     import re
@@ -188,6 +219,44 @@ def render_template(template_html, data):
         rendered = rendered.replace("{{PDF_LIST}}", "")
     
     return rendered
+
+def build_partners_block(partners):
+    """Construit la grille HTML des partenaires (3 par ligne).
+    Chaque partenaire : {"name": str, "logoUrl": str}.
+    Logo affiché seulement si l'URL est absolue (http...), sinon nom en texte."""
+    cells = []
+    for partner in partners:
+        name = (partner.get("name") or "").strip()
+        logo = (partner.get("logoUrl") or "").strip()
+        if logo.startswith("http"):
+            inner = (
+                f'<img src="{logo}" alt="{name}" height="44" '
+                'style="max-height:44px;max-width:150px;display:inline-block;" />'
+            )
+        else:
+            inner = (
+                '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:15px;'
+                'line-height:18px;color:#163057;font-weight:bold;letter-spacing:.3px;">'
+                f'{name}</div>'
+            )
+        cells.append(
+            '<td class="logo-cell" width="33.33%" style="padding:6px;">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+            'style="background:#ffffff;border:1px solid #edeff3;border-radius:8px;">'
+            f'<tr><td height="66" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
+            '</table></td>'
+        )
+    rows = []
+    for i in range(0, len(cells), 3):
+        row_cells = cells[i:i + 3]
+        while len(row_cells) < 3:
+            row_cells.append('<td class="logo-cell" width="33.33%" style="padding:6px;">&nbsp;</td>')
+        rows.append(
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+            + "".join(row_cells) + '</tr></table>'
+        )
+    return "".join(rows)
+
 
 def download_file_from_url(url):
     """Télécharge un fichier depuis une URL"""
@@ -393,8 +462,17 @@ def send_brochure_email(request):
             data["subject"] = "L'événement affiche complet – confirmez votre place | Athena Event"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", SMTP_USER)
+        elif event_type == "EVENT_THANK_YOU":
+            print("   • Email de remerciement post-événement détecté")
+            data.setdefault("staticTemplateNum", 5)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend envoie "destinataire" au lieu de "recipients"
+            if not data.get("recipients") and data.get("destinataire"):
+                data["recipients"] = data["destinataire"]
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", data.get("contactEmail") or SMTP_USER)
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE ou EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION ou EVENT_THANK_YOU")
             return ("OK: type ignoré", 200)
 
         # Envoyer l'email

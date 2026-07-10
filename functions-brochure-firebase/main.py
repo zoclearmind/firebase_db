@@ -67,8 +67,17 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data["subject"] = "L'événement affiche complet – confirmez votre place | Athena Event"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
+        elif event_type == "EVENT_THANK_YOU":
+            print("   • Email de remerciement post-événement détecté")
+            data.setdefault("staticTemplateNum", 5)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend envoie "destinataire" au lieu de "recipients"
+            if not data.get("recipients") and data.get("destinataire"):
+                data["recipients"] = data["destinataire"]
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", data.get("contactEmail") or "noreply@athena-event.com")
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE ou EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION ou EVENT_THANK_YOU")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)

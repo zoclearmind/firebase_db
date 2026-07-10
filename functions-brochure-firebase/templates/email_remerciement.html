@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+  <title>{{eventTitle}}</title>
+  <!--[if mso]>
+  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+  <![endif]-->
+  <style>
+    /* Client resets */
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+    table,td{mso-table-lspace:0pt;mso-table-rspace:0pt;}
+    img{-ms-interpolation-mode:bicubic;border:0;outline:none;text-decoration:none;}
+    body{margin:0;padding:0;width:100%!important;background:#eef1f5;}
+    a{color:#163057;}
+    /* Mobile */
+    @media only screen and (max-width:680px){
+      .container{width:100%!important;}
+      .px{padding-left:24px!important;padding-right:24px!important;}
+      .logo-cell{display:block!important;width:100%!important;box-sizing:border-box!important;}
+      .h1{font-size:26px!important;line-height:32px!important;}
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#eef1f5;">
+  <!-- Preheader (texte d'aperçu, masqué) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#eef1f5;opacity:0;">
+    Merci d'avoir particip&eacute; &agrave; {{eventTitle}} &mdash; votre retour nous est pr&eacute;cieux.
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f5;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+
+        <!-- ============ CARTE PRINCIPALE ============ -->
+        <table role="presentation" class="container" width="680" cellpadding="0" cellspacing="0" style="width:680px;max-width:680px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(20,41,77,0.10);">
+
+          <!-- ---- EN-TÊTE (bandeau marine) ---- -->
+          <tr>
+            <td style="background:#163057;background-image:linear-gradient(180deg,#1c3a63 0%,#122748 100%);padding:38px 40px 30px 40px;text-align:center;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:36px;color:#ffffff;font-style:italic;padding-top:10px;">
+                {{eventTitle}}
+              </div>
+              <div style="width:54px;height:2px;background:#c7a253;margin:18px auto 16px auto;line-height:2px;font-size:0;">&nbsp;</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;letter-spacing:1px;color:#d7deea;">
+                {{eventDateRange}}
+              </div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9fb0c9;padding-top:4px;">
+                {{eventLocation}}
+              </div>
+            </td>
+          </tr>
+
+          <!-- ---- CORPS ---- -->
+          <tr>
+            <td class="px" style="padding:36px 44px 8px 44px;">
+              <p style="margin:0 0 4px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#5a6577;">
+                {{greetingPrefix}} {{toFirstName}},
+              </p>
+              <h1 class="h1" style="margin:8px 0 18px 0;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:34px;color:#163057;font-weight:normal;">
+                {{title}}
+              </h1>
+              <p style="margin:0 0 16px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#3b4453;">
+                {{bodyParagraph1}}
+              </p>
+              <p style="margin:0 0 24px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#3b4453;">
+                {{bodyParagraph2}}
+              </p>
+            </td>
+          </tr>
+
+          <!-- PARTNERS_SECTION_START -->
+          <!-- ---- SÉPARATEUR ---- -->
+          <tr>
+            <td style="padding:20px 44px 0 44px;">
+              <div style="border-top:1px solid #e6e9ef;line-height:1px;font-size:0;">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- ---- PARTENAIRES / SPONSORS ---- -->
+          <tr>
+            <td class="px" style="padding:28px 40px 8px 40px;text-align:center;">
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:3px;color:#8290a5;text-transform:uppercase;padding-bottom:22px;">
+                Avec le soutien de nos partenaires
+              </div>
+              {{PARTNERS_BLOCK}}
+            </td>
+          </tr>
+          <!-- PARTNERS_SECTION_END -->
+
+          <!-- ---- SIGNATURE ---- -->
+          <tr>
+            <td class="px" style="padding:26px 44px 6px 44px;">
+              <div style="border-top:1px solid #e6e9ef;line-height:1px;font-size:0;margin-bottom:22px;">&nbsp;</div>
+              <p style="margin:0 0 2px 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;color:#3b4453;">
+                Bien &agrave; vous,
+              </p>
+              <p style="margin:0 0 2px 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#163057;">
+                {{footerOrganizers}}
+              </p>
+              <p style="margin:0 0 14px 0;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;color:#5a6577;">
+                {{footerOrganizations}}
+              </p>
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#8290a5;font-style:italic;">
+                {{footerPatronage}}
+              </p>
+            </td>
+          </tr>
+
+          <!-- ---- PIED DE PAGE ---- -->
+          <tr>
+            <td style="background:#122748;padding:26px 40px;text-align:center;">
+              <div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#c7d0df;padding-bottom:12px;">
+                &laquo;&nbsp;{{footerQuote}}&nbsp;&raquo;
+              </div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8ea0bb;padding-bottom:14px;">
+                <a href="{{websiteUrl}}" target="_blank" style="color:#c7d0df;text-decoration:none;">{{websiteUrl}}</a>
+                &nbsp;&middot;&nbsp;
+                <a href="mailto:{{contactEmail}}" style="color:#c7d0df;text-decoration:none;">{{contactEmail}}</a>
+              </div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:16px;color:#6f83a0;">
+                Vous recevez cet e-mail car vous &eacute;tiez inscrit(e) &agrave; {{eventTitle}}.<br>
+                <a href="{{unsubscribeUrl}}" target="_blank" style="color:#9fb0c9;text-decoration:underline;">Se d&eacute;sabonner</a>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+        <!-- ============ /CARTE ============ -->
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

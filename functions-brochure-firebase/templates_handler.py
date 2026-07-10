@@ -15,7 +15,7 @@ def load_template(template_num):
     """
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3 ou 4.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3, 4 ou 5.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -69,7 +69,36 @@ def render_template(template_html, data):
     }
     for key, value in extra_fields.items():
         rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
-    
+
+    # ── Champs du template remerciement (EVENT_THANK_YOU) ──
+    thank_you_fields = {
+        "greetingPrefix": data.get("greetingPrefix", "Bonjour"),
+        "toFirstName": data.get("toFirstName", ""),
+        "toLastName": data.get("toLastName", ""),
+        "title": data.get("title", ""),
+        "bodyParagraph1": data.get("bodyParagraph1", ""),
+        "bodyParagraph2": data.get("bodyParagraph2", ""),
+        "eventDateRange": data.get("eventDateRange", ""),
+        "eventLocation": data.get("eventLocation", ""),
+        "footerQuote": data.get("footerQuote", ""),
+        "footerOrganizers": data.get("footerOrganizers", ""),
+        "footerOrganizations": data.get("footerOrganizations", ""),
+        "footerPatronage": data.get("footerPatronage", ""),
+        "websiteUrl": data.get("websiteUrl", "#"),
+        "contactEmail": data.get("contactEmail", ""),
+        "unsubscribeUrl": data.get("unsubscribeUrl", "#"),
+    }
+    for key, value in thank_you_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
+
+    # ── Grille des partenaires (section retirée si aucun partenaire) ──
+    partners = data.get("partners") or []
+    if partners and "{{PARTNERS_BLOCK}}" in rendered:
+        rendered = rendered.replace("{{PARTNERS_BLOCK}}", build_partners_block(partners))
+    else:
+        pattern = r'<!-- PARTNERS_SECTION_START -->.*?<!-- PARTNERS_SECTION_END -->'
+        rendered = re.sub(pattern, '', rendered, flags=re.DOTALL)
+
     # ── Logo (URL directe, pas inline) ──
     company_logo = data.get("company_logo", "")
     if company_logo is None or company_logo.strip() == "":
@@ -112,6 +141,44 @@ def render_template(template_html, data):
         rendered = rendered.replace("{{PDF_LIST}}", "")
     
     return rendered
+
+
+def build_partners_block(partners):
+    """Construit la grille HTML des partenaires (3 par ligne).
+    Chaque partenaire : {"name": str, "logoUrl": str}.
+    Logo affiché seulement si l'URL est absolue (http...), sinon nom en texte."""
+    cells = []
+    for partner in partners:
+        name = (partner.get("name") or "").strip()
+        logo = (partner.get("logoUrl") or "").strip()
+        if logo.startswith("http"):
+            inner = (
+                f'<img src="{logo}" alt="{name}" height="44" '
+                'style="max-height:44px;max-width:150px;display:inline-block;" />'
+            )
+        else:
+            inner = (
+                '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:15px;'
+                'line-height:18px;color:#163057;font-weight:bold;letter-spacing:.3px;">'
+                f'{name}</div>'
+            )
+        cells.append(
+            '<td class="logo-cell" width="33.33%" style="padding:6px;">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+            'style="background:#ffffff;border:1px solid #edeff3;border-radius:8px;">'
+            f'<tr><td height="66" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
+            '</table></td>'
+        )
+    rows = []
+    for i in range(0, len(cells), 3):
+        row_cells = cells[i:i + 3]
+        while len(row_cells) < 3:
+            row_cells.append('<td class="logo-cell" width="33.33%" style="padding:6px;">&nbsp;</td>')
+        rows.append(
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+            + "".join(row_cells) + '</tr></table>'
+        )
+    return "".join(rows)
 
 
 def _build_pdf_list(attachment_urls):
