@@ -64,7 +64,7 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data.setdefault("staticTemplateNum", 4)
             data.setdefault("_hide_attachments_section", True)
             # Le backend n'envoie pas ces champs pour ce type : valeurs en dur
-            data["subject"] = "Votre place vous attend – confirmez votre venue | Athena Event"
+            data["subject"] = "L'événement affiche complet – confirmez votre place | Athena Event"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
         else:
