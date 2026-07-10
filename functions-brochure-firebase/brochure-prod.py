@@ -254,7 +254,7 @@ def send_brochure_email_smtp(data):
         else:
             html_content += tracker_pixel
 
-    event_name = data.get('event_name', 'Athena Event')
+    event_title = data.get('eventTitle') or data.get('event_name') or 'Athena Event'
     company_name = data.get('company_name', '')
     
     # Créer le message MIME
@@ -262,7 +262,7 @@ def send_brochure_email_smtp(data):
     # Format: "Nom Entreprise <email@domain.com>"
     
     # APRÈS
-    msg["From"] = formataddr((f"{event_name} via {company_name}", SMTP_USER))
+    msg["From"] = formataddr((f"{event_title} via {company_name}", SMTP_USER))
     msg["To"] = recipients if isinstance(recipients, str) else ", ".join(recipients)
     msg["Subject"] = subject
     
