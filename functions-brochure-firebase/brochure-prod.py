@@ -235,8 +235,8 @@ def build_partners_block(partners):
             )
         else:
             inner = (
-                '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:15px;'
-                'line-height:18px;color:#163057;font-weight:bold;letter-spacing:.3px;">'
+                '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:19px;'
+                'line-height:24px;color:#163057;font-weight:bold;letter-spacing:.3px;">'
                 f'{name}</div>'
             )
         cells.append(
