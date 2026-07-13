@@ -284,6 +284,49 @@ def is_pdf_url(url):
     """Vérifie si l'URL est un PDF"""
     return url.lower().endswith('.pdf') or 'pdf' in url.lower()
 
+def _embed_base64_images(html_content, related_part):
+    """
+    Remplace chaque <img src="data:image/...;base64,..."> du HTML par une
+    référence cid: et attache l'image en pièce jointe inline (multipart/related).
+    Nécessaire car Gmail, Outlook et la plupart des clients mail bloquent les
+    data: URI, alors qu'ils affichent les images inline CID.
+    Les images identiques sont dédupliquées (un seul CID).
+    """
+    import re
+    pattern = re.compile(r'data:image/([a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/=]+)')
+    cid_map = {}  # payload base64 -> (cid, bytes, subtype)
+
+    def _to_cid(match):
+        subtype = match.group(1).lower()
+        payload = match.group(2)
+        if subtype == "svg+xml":
+            return match.group(0)  # SVG non supporté par les clients mail
+        entry = cid_map.get(payload)
+        if entry is None:
+            try:
+                img_bytes = base64.b64decode(payload)
+            except Exception:
+                return match.group(0)
+            cid = f"embimg{len(cid_map) + 1}"
+            cid_map[payload] = (cid, img_bytes, subtype)
+        else:
+            cid = entry[0]
+        return f"cid:{cid}"
+
+    new_html = pattern.sub(_to_cid, html_content)
+
+    for cid, img_bytes, subtype in cid_map.values():
+        mime_subtype = "jpeg" if subtype == "jpg" else subtype
+        img_part = MIMEImage(img_bytes, _subtype=mime_subtype)
+        img_part.add_header("Content-ID", f"<{cid}>")
+        img_part.add_header("Content-Disposition", "inline", filename=f"{cid}.{mime_subtype}")
+        related_part.attach(img_part)
+
+    if cid_map:
+        print(f"🖼️ {len(cid_map)} image(s) base64 converties en pièces jointes inline (CID)")
+    return new_html
+
+
 def send_brochure_email_smtp(data):
     """Envoie l'email brochure via SMTP"""
     
@@ -342,7 +385,11 @@ def send_brochure_email_smtp(data):
     # Ajouter le corps HTML
     msg_alternative = MIMEMultipart("alternative")
     msg_related.attach(msg_alternative)
-    
+
+    # Gmail/Outlook suppriment les images "data:" base64 du HTML :
+    # on les convertit en pièces jointes inline référencées par cid:
+    html_content = _embed_base64_images(html_content, msg_related)
+
     html_part = MIMEText(html_content, "html", "utf-8")
     msg_alternative.attach(html_part)
     
