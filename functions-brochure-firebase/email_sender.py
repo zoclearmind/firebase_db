@@ -135,7 +135,8 @@ def _embed_base64_images(html_content, related_part):
         mime_subtype = "jpeg" if subtype == "jpg" else subtype
         img_part = MIMEImage(img_bytes, _subtype=mime_subtype)
         img_part.add_header("Content-ID", f"<{cid}>")
-        img_part.add_header("Content-Disposition", "inline", filename=f"{cid}.{mime_subtype}")
+        # Pas de filename : Zoho/Thunderbird listeraient sinon l'image en pièce jointe
+        img_part.add_header("Content-Disposition", "inline")
         related_part.attach(img_part)
 
     if cid_map:
