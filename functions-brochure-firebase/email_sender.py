@@ -109,6 +109,10 @@ def _embed_base64_images(html_content, related_part):
     data: URI, alors qu'ils affichent les images inline CID.
     Les images identiques sont dédupliquées (un seul CID).
     """
+    import uuid
+    # Suffixe unique par envoi : sans lui, Zoho met en cache les images par
+    # Content-ID et peut afficher celles d'un ancien email (logos mélangés)
+    unique = uuid.uuid4().hex[:12]
     pattern = re.compile(r'data:image/([a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/=]+)')
     cid_map = {}  # payload base64 -> (cid, bytes, subtype)
 
@@ -123,7 +127,7 @@ def _embed_base64_images(html_content, related_part):
                 img_bytes = base64.b64decode(payload)
             except Exception:
                 return match.group(0)
-            cid = f"embimg{len(cid_map) + 1}"
+            cid = f"embimg{len(cid_map) + 1}.{unique}@athena-event.com"
             cid_map[payload] = (cid, img_bytes, subtype)
         else:
             cid = entry[0]
@@ -135,8 +139,9 @@ def _embed_base64_images(html_content, related_part):
         mime_subtype = "jpeg" if subtype == "jpg" else subtype
         img_part = MIMEImage(img_bytes, _subtype=mime_subtype)
         img_part.add_header("Content-ID", f"<{cid}>")
-        # Pas de filename : Zoho/Thunderbird listeraient sinon l'image en pièce jointe
-        img_part.add_header("Content-Disposition", "inline")
+        # Pas de Content-Disposition du tout (RFC 2387) : dans un multipart/related
+        # cet en-tête est superflu et pousse Zoho/Thunderbird à lister
+        # l'image comme pièce jointe
         related_part.attach(img_part)
 
     if cid_map:
