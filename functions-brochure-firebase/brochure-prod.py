@@ -230,8 +230,8 @@ def build_partners_block(partners):
         logo = (partner.get("logoUrl") or "").strip()
         if logo.startswith("http"):
             inner = (
-                f'<img src="{logo}" alt="{name}" height="44" '
-                'style="max-height:44px;max-width:150px;display:inline-block;" />'
+                f'<img src="{logo}" alt="{name}" height="72" '
+                'style="max-height:72px;max-width:190px;display:inline-block;" />'
             )
         else:
             inner = (
@@ -243,7 +243,7 @@ def build_partners_block(partners):
             '<td class="logo-cell" width="33.33%" style="padding:6px;">'
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
             'style="background:#ffffff;border:1px solid #edeff3;border-radius:8px;">'
-            f'<tr><td height="66" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
+            f'<tr><td height="96" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
             '</table></td>'
         )
     rows = []
@@ -459,7 +459,7 @@ def send_brochure_email(request):
             data.setdefault("staticTemplateNum", 4)
             data.setdefault("_hide_attachments_section", True)
             # Le backend n'envoie pas ces champs pour ce type : valeurs en dur
-            data["subject"] = "L'événement affiche complet – confirmez votre place | Athena Event"
+            data["subject"] = "Confirmation de votre venue à l'événement"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", SMTP_USER)
         elif event_type == "EVENT_THANK_YOU":

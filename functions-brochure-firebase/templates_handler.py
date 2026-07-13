@@ -153,8 +153,8 @@ def build_partners_block(partners):
         logo = (partner.get("logoUrl") or "").strip()
         if logo.startswith("http"):
             inner = (
-                f'<img src="{logo}" alt="{name}" height="44" '
-                'style="max-height:44px;max-width:150px;display:inline-block;" />'
+                f'<img src="{logo}" alt="{name}" height="72" '
+                'style="max-height:72px;max-width:190px;display:inline-block;" />'
             )
         else:
             inner = (
@@ -166,7 +166,7 @@ def build_partners_block(partners):
             '<td class="logo-cell" width="33.33%" style="padding:6px;">'
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
             'style="background:#ffffff;border:1px solid #edeff3;border-radius:8px;">'
-            f'<tr><td height="66" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
+            f'<tr><td height="96" align="center" valign="middle" style="padding:10px;">{inner}</td></tr>'
             '</table></td>'
         )
     rows = []
