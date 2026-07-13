@@ -74,6 +74,8 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             # Le backend envoie "destinataire" au lieu de "recipients"
             if not data.get("recipients") and data.get("destinataire"):
                 data["recipients"] = data["destinataire"]
+            # Sujet en dur pour cette édition (le backend n'a pas à l'envoyer)
+            data["subject"] = "Merci d'avoir été des nôtres — Rencontre Géopolitique de l'Océan Indien 2026"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", data.get("contactEmail") or "noreply@athena-event.com")
         else:
