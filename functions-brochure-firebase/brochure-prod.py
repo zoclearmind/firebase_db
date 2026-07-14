@@ -253,6 +253,7 @@ def build_requesters_block(requesters):
         email = _html.escape((requester.get("requesterEmail") or "").strip())
         profession = _html.escape((requester.get("requesterProfession") or "").strip())
         company = _html.escape((requester.get("requesterCompany") or "").strip())
+        acceptation_link = _html.escape((requester.get("acceptationLink") or "").strip(), quote=True)
         note = _html.escape((requester.get("note") or "").strip())
         name = " ".join(part for part in (first, last) if part) or email
         # Ligne "Profession · Entreprise" (seuls les champs fournis apparaissent)
@@ -273,15 +274,33 @@ def build_requesters_block(requesters):
                 'font-size:14px;line-height:21px;color:#5a6577;">'
                 f'&laquo;&nbsp;{note}&nbsp;&raquo;</div>'
             )
+        # Bouton "Accepter" à droite des informations (omis si le lien est absent)
+        button_html = ""
+        if acceptation_link:
+            button_html = (
+                '<td align="right" valign="middle" style="padding-left:24px;white-space:nowrap;">'
+                '<table role="presentation" cellpadding="0" cellspacing="0">'
+                '<tr><td bgcolor="#163057" style="border-radius:8px;">'
+                f'<a href="{acceptation_link}" target="_blank" '
+                'style="display:inline-block;padding:10px 22px;font-family:Arial,Helvetica,sans-serif;'
+                'font-size:13px;font-weight:bold;letter-spacing:.5px;color:#ffffff;text-decoration:none;'
+                'border-radius:8px;">Accepter</a>'
+                '</td></tr></table></td>'
+            )
         cards.append(
             '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px 0;">'
             '<tr><td style="background:#ffffff;border:1px solid #e6e9ef;border-left:3px solid #c7a253;'
             'border-radius:10px;padding:18px 22px;">'
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+            '<td valign="middle">'
             '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:17px;'
             f'line-height:24px;color:#163057;">{name}</div>'
             f'{role_html}'
             '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;padding-top:3px;">'
             f'<a href="mailto:{email}" style="color:#a3823c;text-decoration:none;">{email}</a></div>'
+            '</td>'
+            f'{button_html}'
+            '</tr></table>'
             f'{note_html}'
             '</td></tr></table>'
         )
