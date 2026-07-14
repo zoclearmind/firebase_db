@@ -79,8 +79,23 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data["eventTitle"] = "Rencontre Géopolitique de l'Océan Indien"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", data.get("contactEmail") or "noreply@athena-event.com")
+        elif event_type == "CONTACT_REQUEST":
+            print("   • Demandes de mise en relation détectées")
+            data.setdefault("staticTemplateNum", 6)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend envoie "destEmail" au lieu de "recipients"
+            if not data.get("recipients") and data.get("destEmail"):
+                data["recipients"] = data["destEmail"]
+            nb_requests = len(data.get("requesters") or [])
+            if nb_requests <= 1:
+                data["subject"] = "Un participant souhaite entrer en contact avec vous — Athena Event"
+            else:
+                data["subject"] = f"{nb_requests} participants souhaitent entrer en contact avec vous — Athena Event"
+            data["eventTitle"] = "Mise en relation"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", "noreply@athena-event.com")
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION ou EVENT_THANK_YOU")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU ou CONTACT_REQUEST")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)

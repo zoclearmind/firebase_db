@@ -15,7 +15,7 @@ def load_template(template_num):
     """
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez 1, 2, 3, 4 ou 5.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 6.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -91,6 +91,26 @@ def render_template(template_html, data):
     for key, value in thank_you_fields.items():
         rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
 
+    # ── Champs du template mise en relation (CONTACT_REQUEST) ──
+    dest_name = " ".join(
+        part for part in (
+            (data.get("destFirstName") or "").strip(),
+            (data.get("destLastName") or "").strip(),
+        ) if part
+    )
+    contact_fields = {
+        "destFirstName": data.get("destFirstName", ""),
+        "destLastName": data.get("destLastName", ""),
+        # Espace inclus pour que "Bonjour{{destFullName}}," reste correct sans nom
+        "destFullName": f" {dest_name}" if dest_name else "",
+    }
+    for key, value in contact_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", str(value or ""))
+
+    requesters = data.get("requesters") or []
+    if "{{REQUESTERS_BLOCK}}" in rendered:
+        rendered = rendered.replace("{{REQUESTERS_BLOCK}}", build_requesters_block(requesters))
+
     # ── Grille des partenaires (section retirée si aucun partenaire) ──
     partners = data.get("partners") or []
     if partners and "{{PARTNERS_BLOCK}}" in rendered:
@@ -141,6 +161,53 @@ def render_template(template_html, data):
         rendered = rendered.replace("{{PDF_LIST}}", "")
     
     return rendered
+
+
+def build_requesters_block(requesters):
+    """Construit la liste élégante des demandes de contact (une carte par demandeur).
+    Chaque demandeur : {"requesterFirstName", "requesterLastName", "requesterEmail", "note"}.
+    La note est omise si vide."""
+    import html as _html
+    cards = []
+    for requester in requesters:
+        first = _html.escape((requester.get("requesterFirstName") or "").strip())
+        last = _html.escape((requester.get("requesterLastName") or "").strip())
+        email = _html.escape((requester.get("requesterEmail") or "").strip())
+        profession = _html.escape((requester.get("requesterProfession") or "").strip())
+        company = _html.escape((requester.get("requesterCompany") or "").strip())
+        note = _html.escape((requester.get("note") or "").strip())
+        name = " ".join(part for part in (first, last) if part) or email
+        # Ligne "Profession · Entreprise" (seuls les champs fournis apparaissent)
+        role_html = ""
+        if profession or company:
+            role = ' <span style="color:#c7a253;">&middot;</span> '.join(
+                part for part in (profession, company) if part
+            )
+            role_html = (
+                '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;'
+                f'line-height:19px;color:#5a6577;padding-top:2px;">{role}</div>'
+            )
+        note_html = ""
+        if note:
+            note_html = (
+                '<div style="border-top:1px solid #eef1f5;margin-top:12px;padding-top:10px;'
+                'font-family:Georgia,\'Times New Roman\',serif;font-style:italic;'
+                'font-size:14px;line-height:21px;color:#5a6577;">'
+                f'&laquo;&nbsp;{note}&nbsp;&raquo;</div>'
+            )
+        cards.append(
+            '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px 0;">'
+            '<tr><td style="background:#ffffff;border:1px solid #e6e9ef;border-left:3px solid #c7a253;'
+            'border-radius:10px;padding:18px 22px;">'
+            '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:17px;'
+            f'line-height:24px;color:#163057;">{name}</div>'
+            f'{role_html}'
+            '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;padding-top:3px;">'
+            f'<a href="mailto:{email}" style="color:#a3823c;text-decoration:none;">{email}</a></div>'
+            f'{note_html}'
+            '</td></tr></table>'
+        )
+    return "\n".join(cards)
 
 
 def build_partners_block(partners):
