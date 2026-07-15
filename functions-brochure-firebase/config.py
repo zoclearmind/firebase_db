@@ -20,5 +20,6 @@ TEMPLATES = {
     3: "template_3.html",  # Business Professional
     4: "template_4.html",  # Confirmation d'inscription événementielle
     5: "email_remerciement.html",  # Remerciement post-événement
-    6: "email_contact_request.html"  # Demandes de mise en relation entre participants
+    6: "email_contact_request.html",  # Demandes de mise en relation entre participants
+    7: "email_contact_accepted.html"  # Acceptation d'une demande de mise en relation
 }

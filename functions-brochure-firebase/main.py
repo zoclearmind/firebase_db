@@ -94,8 +94,28 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data["eventTitle"] = "Mise en relation"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
+        elif event_type == "ACCEPT_CONTACT_REQUEST":
+            print("   • Acceptation d'une demande de contact détectée")
+            data.setdefault("staticTemplateNum", 7)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend envoie "destEmail" au lieu de "recipients"
+            if not data.get("recipients") and data.get("destEmail"):
+                data["recipients"] = data["destEmail"]
+            accepter_name = " ".join(
+                part for part in (
+                    (data.get("accepterFirstName") or "").strip(),
+                    (data.get("accepterLastName") or "").strip(),
+                ) if part
+            )
+            if accepter_name:
+                data["subject"] = f"{accepter_name} a accepté votre demande de contact — Athena Event"
+            else:
+                data["subject"] = "Votre demande de contact a été acceptée — Athena Event"
+            data["eventTitle"] = "Mise en relation"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", "noreply@athena-event.com")
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU ou CONTACT_REQUEST")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST ou ACCEPT_CONTACT_REQUEST")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)

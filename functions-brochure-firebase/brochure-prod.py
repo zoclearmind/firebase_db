@@ -29,7 +29,8 @@ TEMPLATES = {
     3: "template_3.html",  # Business Professional
     4: "template_4.html",  # Confirmation d'inscription événementielle
     5: "email_remerciement.html",  # Remerciement post-événement
-    6: "email_contact_request.html"  # Demandes de mise en relation entre participants
+    6: "email_contact_request.html",  # Demandes de mise en relation entre participants
+    7: "email_contact_accepted.html"  # Acceptation d'une demande de mise en relation
 }
 
 
@@ -37,7 +38,7 @@ def load_template(template_num):
     """Charge le template HTML depuis le fichier"""
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 6.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 7.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -131,6 +132,10 @@ def render_template(template_html, data):
     requesters = data.get("requesters") or []
     if "{{REQUESTERS_BLOCK}}" in rendered:
         rendered = rendered.replace("{{REQUESTERS_BLOCK}}", build_requesters_block(requesters))
+
+    # ── Carte de l'accepteur (ACCEPT_CONTACT_REQUEST) ──
+    if "{{ACCEPTER_BLOCK}}" in rendered:
+        rendered = rendered.replace("{{ACCEPTER_BLOCK}}", build_accepter_block(data))
 
     # ── Grille des partenaires (section retirée si aucun partenaire) ──
     import re as _re
@@ -305,6 +310,62 @@ def build_requesters_block(requesters):
             '</td></tr></table>'
         )
     return "\n".join(cards)
+
+
+def build_accepter_block(data):
+    """Construit la carte de la personne ayant accepté la demande de contact
+    (ACCEPT_CONTACT_REQUEST). Champs : accepterFirstName, accepterLastName,
+    accepterEmail, accepterNote ; destNote rappelle le message d'origine.
+    Les notes sont omises si vides."""
+    import html as _html
+    first = _html.escape((data.get("accepterFirstName") or "").strip())
+    last = _html.escape((data.get("accepterLastName") or "").strip())
+    email = _html.escape((data.get("accepterEmail") or "").strip())
+    accepter_note = _html.escape((data.get("accepterNote") or "").strip())
+    dest_note = _html.escape((data.get("destNote") or "").strip())
+    name = " ".join(part for part in (first, last) if part) or email
+    note_html = ""
+    if accepter_note:
+        note_html = (
+            '<div style="border-top:1px solid #eef1f5;margin-top:12px;padding-top:10px;'
+            'font-family:Georgia,\'Times New Roman\',serif;font-style:italic;'
+            'font-size:14px;line-height:21px;color:#5a6577;">'
+            f'&laquo;&nbsp;{accepter_note}&nbsp;&raquo;</div>'
+        )
+    # Pastille dorée "Demande acceptée" à droite des informations
+    badge_html = (
+        '<td align="right" valign="middle" style="padding-left:24px;white-space:nowrap;">'
+        '<table role="presentation" cellpadding="0" cellspacing="0">'
+        '<tr><td style="background:#faf6ec;border:1px solid #e7d9b2;border-radius:20px;'
+        'padding:6px 14px;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;'
+        'font-weight:bold;letter-spacing:.8px;color:#a3823c;text-transform:uppercase;">'
+        'Demande accept&eacute;e</td></tr></table></td>'
+    )
+    card = (
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px 0;">'
+        '<tr><td style="background:#ffffff;border:1px solid #e6e9ef;border-left:3px solid #c7a253;'
+        'border-radius:10px;padding:18px 22px;">'
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>'
+        '<td valign="middle">'
+        '<div style="font-family:Georgia,\'Times New Roman\',serif;font-size:17px;'
+        f'line-height:24px;color:#163057;">{name}</div>'
+        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;padding-top:3px;">'
+        f'<a href="mailto:{email}" style="color:#a3823c;text-decoration:none;">{email}</a></div>'
+        '</td>'
+        f'{badge_html}'
+        '</tr></table>'
+        f'{note_html}'
+        '</td></tr></table>'
+    )
+    if dest_note:
+        card += (
+            '\n<div style="font-family:Arial,Helvetica,sans-serif;font-size:12.5px;'
+            'line-height:19px;color:#8a93a3;padding:2px 4px 0 4px;">'
+            'Pour m&eacute;moire, le message que vous aviez adress&eacute;&nbsp;: '
+            '<span style="font-family:Georgia,\'Times New Roman\',serif;font-style:italic;">'
+            f'&laquo;&nbsp;{dest_note}&nbsp;&raquo;</span></div>'
+        )
+    return card
 
 
 def build_partners_block(partners):
@@ -629,8 +690,28 @@ def send_brochure_email(request):
             data["eventTitle"] = "Mise en relation"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", SMTP_USER)
+        elif event_type == "ACCEPT_CONTACT_REQUEST":
+            print("   • Acceptation d'une demande de contact détectée")
+            data.setdefault("staticTemplateNum", 7)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend envoie "destEmail" au lieu de "recipients"
+            if not data.get("recipients") and data.get("destEmail"):
+                data["recipients"] = data["destEmail"]
+            accepter_name = " ".join(
+                part for part in (
+                    (data.get("accepterFirstName") or "").strip(),
+                    (data.get("accepterLastName") or "").strip(),
+                ) if part
+            )
+            if accepter_name:
+                data["subject"] = f"{accepter_name} a accepté votre demande de contact — Athena Event"
+            else:
+                data["subject"] = "Votre demande de contact a été acceptée — Athena Event"
+            data["eventTitle"] = "Mise en relation"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", SMTP_USER)
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU ou CONTACT_REQUEST")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST ou ACCEPT_CONTACT_REQUEST")
             return ("OK: type ignoré", 200)
 
         # Envoyer l'email
