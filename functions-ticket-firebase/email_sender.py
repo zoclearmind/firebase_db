@@ -100,7 +100,7 @@ def send_ticket_email_invited(
         + _security_card(security_items)
         + f"""
         <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;font-size:14px;
-                   color:#57534e;line-height:1.6;">
+                   color:#3b4453;line-height:1.6;">
           Nous vous remercions pour votre confiance et restons &#224; votre disposition
           pour toute question.
         </p>
@@ -241,7 +241,7 @@ def send_ticket_email_with_qr(
         + _security_card(security_items)
         + """
         <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;font-size:14px;
-                   color:#57534e;line-height:1.6;">
+                   color:#3b4453;line-height:1.6;">
           Nous vous remercions pour votre confiance et restons &#224; votre disposition
           pour toute question.
         </p>

@@ -2,6 +2,12 @@
 # ║                                                              ║
 # ║   ZONE DESIGN — STRUCTURE HTML & STYLES CSS                 ║
 # ║                                                              ║
+# ║   Identité visuelle Athena Event :                           ║
+# ║     • Navy   #163057 / #122748  (fonds sombres, titres)     ║
+# ║     • Doré   #c7a253 / #a3823c  (accents, liens)            ║
+# ║     • Fond   #eef1f5            (gris bleuté clair)         ║
+# ║     • Titres Georgia, corps Arial                            ║
+# ║                                                              ║
 # ║   Contient l'enveloppe HTML de tous les emails :            ║
 # ║     • Styles CSS (_base_styles)                             ║
 # ║     • Preheader invisible (_preheader)                      ║
@@ -39,26 +45,26 @@ def _base_styles() -> str:
                                border-radius:0 !important; }
 
             /* Hero plus compact */
-            .hero-td        { height:185px !important; padding:20px 16px !important; }
+            .hero-td        { padding:26px 20px 24px 20px !important; }
 
             /* Logo + nom de marque : empilés verticalement */
             .logo-brand-td  { display:block !important; width:100% !important; }
-            .logo-img       { width:36px !important; height:36px !important; }
-            .brand-name     { font-size:17px !important; }
+            .logo-img       { width:34px !important; height:34px !important; }
+            .brand-name     { font-size:16px !important; }
             .brand-sub      { font-size:9px !important; }
 
             /* Badge type email : passe sous le logo, aligné à gauche */
             .ref-badge-td    { display:block !important; width:100% !important;
                                text-align:left !important;
-                               padding-top:10px !important; padding-left:0 !important; }
+                               padding-top:12px !important; padding-left:0 !important; }
             .ref-badge-inner { text-align:left !important; }
 
             /* Titres hero plus petits */
-            .hero-title     { font-size:17px !important; }
-            .hero-sub       { font-size:11px !important; }
+            .hero-title     { font-size:21px !important; line-height:27px !important; }
+            .hero-sub       { font-size:12px !important; }
 
             /* Corps de l'email : padding réduit */
-            .body-td        { padding:24px 16px 0 16px !important; }
+            .body-td        { padding:26px 20px 0 20px !important; }
 
             /* Cards : padding réduit */
             .card-td        { padding:16px !important; }
@@ -68,11 +74,11 @@ def _base_styles() -> str:
             .cta-link       { font-size:14px !important; }
 
             /* Bloc code */
-            .code-block-td  { padding:20px 14px !important; }
-            .code-val       { font-size:30px !important; letter-spacing:8px !important; }
+            .code-block-td  { padding:22px 14px !important; }
+            .code-val       { font-size:28px !important; letter-spacing:8px !important; }
 
             /* Footer */
-            .footer-td      { padding:22px 16px !important; }
+            .footer-td      { padding:24px 20px !important; }
 
             /* Footer : deux colonnes → empilées verticalement */
             .footer-col-l   { display:block !important; width:100% !important; }
@@ -94,7 +100,7 @@ def _preheader(text: str) -> str:
     filler = "&nbsp;&#8204;" * 60
     return (
         f'<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;'
-        f'font-size:1px;color:#fafafa;line-height:1px;">{text}{filler}</div>'
+        f'font-size:1px;color:#eef1f5;line-height:1px;">{text}{filler}</div>'
     )
 
 
@@ -118,21 +124,21 @@ def _email_open(preheader_text: str = "") -> str:
     <![endif]-->
     <style>{_base_styles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#ede9de;word-spacing:normal;">
+<body style="margin:0;padding:0;background-color:#eef1f5;word-spacing:normal;">
 {_preheader(preheader_text)}
 <!--[if mso | IE]>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-       width="100%" style="background-color:#ede9de;"><tr><td>
+       width="100%" style="background-color:#eef1f5;"><tr><td>
 <![endif]-->
 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-       width="100%" style="background-color:#ede9de;">
+       width="100%" style="background-color:#eef1f5;">
   <tr>
-    <td class="email-outer-td" align="center" style="padding:32px 16px;">
+    <td class="email-outer-td" align="center" style="padding:28px 16px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0"
              class="email-shell"
              style="width:680px;max-width:680px;background-color:#ffffff;
-                    border-radius:16px;overflow:hidden;
-                    box-shadow:0 8px 40px rgba(0,0,0,0.13);">
+                    border-radius:14px;overflow:hidden;
+                    box-shadow:0 8px 28px rgba(20,41,77,0.10);">
 """
 
 
@@ -145,7 +151,7 @@ def _email_close() -> str:
         <tr>
           <td class="below-note" align="center"
               style="padding:14px 32px 0;font-family:Arial,sans-serif;
-                     font-size:11px;color:#a8a29e;line-height:1.6;">
+                     font-size:11px;color:#8a93a3;line-height:1.6;">
             Cet email a été envoyé automatiquement par la plateforme Athena Event.<br>
             Merci de ne pas y répondre directement.
           </td>

@@ -93,14 +93,13 @@ def send_hostess_activation_link(
     user_id: str,
 ) -> None:
     creds_rows = (
-        _info_row("&#128231;", "Email", email)
+        _info_row("", "Email", email)
         + _info_row(
-            "&#128273;", "Mot de passe provisoire",
-            f"<code style='background-color:#f5f0e0;padding:2px 7px;"
+            "", "Mot de passe provisoire",
+            f"<code style='background-color:#f2ede1;padding:2px 7px;"
             f"border-radius:4px;font-family:Courier New,monospace;"
-            f"font-size:13px;color:#44403c;'>{default_password}</code>"
+            f"font-size:13px;color:#163057;'>{default_password}</code>"
         )
-        + _info_row("&#128100;", "ID utilisateur", user_id)
     )
 
     rows = (
@@ -120,7 +119,7 @@ def send_hostess_activation_link(
         + _info_card(creds_rows, label="Vos identifiants de connexion")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Cliquez sur le bouton ci-dessous pour activer votre compte
           et définir votre propre mot de passe :
         </p>
@@ -146,8 +145,7 @@ def send_hostess_activation_link(
         f"Athena Event — Invitation Hôtesse\n\n"
         f"Bonjour {first_name} {last_name},\n\n"
         f"Email : {email}\n"
-        f"Mot de passe provisoire : {default_password}\n"
-        f"ID utilisateur : {user_id}\n\n"
+        f"Mot de passe provisoire : {default_password}\n\n"
         f"Activer mon compte : {activation_link}\n\n"
         "Changez votre mot de passe à la première connexion.\n\n"
         "Cordialement,\nL'équipe Athena Event",
@@ -264,7 +262,7 @@ def send_event_awaiting_approval(
         + _info_card(info_rows, label="RÉSUMÉ DE L'ÉVÉNEMENT")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Connectez-vous à votre tableau de bord administrateur pour
           consulter les détails complets et approuver ou rejeter cet événement.
         </p>
@@ -346,7 +344,7 @@ def send_event_approved(
         + _info_card(info_rows, label="DÉTAILS DE L'ÉVÉNEMENT")
         + """
         <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Vous pouvez maintenant inviter des participants, gérer les inscriptions
           et accéder à toutes les fonctionnalités de gestion d'événement.
         </p>
@@ -405,8 +403,8 @@ def send_participant_invitation_known(
     decline_url = f"{APP_BASE_URL}/api/events/{event_id}/participants/decline?token={token}"
 
     info_rows = (
-        _info_row("&#127970;", "Entreprise invitée", f"<strong>{company_name}</strong>")
-        + _info_row("&#128197;", "Date de l'invitation", datetime.now().strftime('%d %B %Y'))
+        _info_row("", "Entreprise invitée", f"<strong>{company_name}</strong>")
+        + _info_row("", "Date de l'invitation", datetime.now().strftime('%d %B %Y'))
     )
 
     rows = (
@@ -426,7 +424,7 @@ def send_participant_invitation_known(
         + _info_card(info_rows, label="Détails de l'invitation")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Pour plus d'informations ou si vous avez des questions, n'hésitez pas
           à nous contacter. Notre équipe se tient à votre disposition.
         </p>
@@ -475,11 +473,11 @@ def send_participant_invitation_unknown(
 
     steps = [
         "Cliquez sur le bouton ci-dessous pour "
-        "<strong style='color:#44403c;'>créer votre compte gratuitement</strong>",
+        "<strong style='color:#163057;'>créer votre compte gratuitement</strong>",
         "Complétez les informations de "
-        "<strong style='color:#44403c;'>votre entreprise</strong>",
+        "<strong style='color:#163057;'>votre entreprise</strong>",
         "Votre participation est "
-        "<strong style='color:#44403c;'>automatiquement confirm&#233;e</strong> &#10003;",
+        "<strong style='color:#163057;'>automatiquement confirm&#233;e</strong> &#10003;",
     ]
 
     rows = (
@@ -541,9 +539,9 @@ def send_activation_link_organizer(
         _info_row("", "Email", email)
         + _info_row(
             "", "Mot de passe provisoire",
-            f"<code style='background-color:#f5f0e0;padding:2px 7px;"
+            f"<code style='background-color:#f2ede1;padding:2px 7px;"
             f"border-radius:4px;font-family:Courier New,monospace;"
-            f"font-size:13px;color:#44403c;'>{default_password}</code>"
+            f"font-size:13px;color:#163057;'>{default_password}</code>"
         )
         + _info_row("", "Entreprise", f"<strong>{company_name}</strong>")
     )
@@ -565,7 +563,7 @@ def send_activation_link_organizer(
         + _info_card(creds_rows, label="Vos identifiants de connexion")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Cliquez sur le bouton ci-dessous pour activer votre compte
           et définir votre propre mot de passe :
         </p>

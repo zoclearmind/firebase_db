@@ -2,6 +2,9 @@
 # ║                                                              ║
 # ║   ZONE DESIGN — COMPOSANTS VISUELS                          ║
 # ║                                                              ║
+# ║   Identité Athena Event : navy #163057 / doré #c7a253,      ║
+# ║   titres Georgia, corps Arial.                               ║
+# ║                                                              ║
 # ║   Pour modifier :                                            ║
 # ║     • Logo / image hero    → config.py                      ║
 # ║     • Couleurs, polices    → templates/base.py              ║
@@ -26,16 +29,18 @@ from templates.base import _email_open, _email_close
 
 def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url: str = "") -> str:
     """
-    Bandeau hero avec image de fond, logo, nom de marque.
+    Bandeau hero navy : logo + marque à gauche, badge doré à droite,
+    filet doré, titre Georgia et sous-titre.
 
     email_type_label : texte affiché dans le badge en haut à droite du hero.
     hero_image_url   : image de fond personnalisée (ex: image de l'événement).
                        Si vide, utilise HERO_IMAGE_URL par défaut.
 
     Technique image de fond :
-      - background-image CSS  → Gmail, Apple Mail, Samsung Mail
-      - attribut background=  → clients anciens
-      - VML v:rect            → Outlook Windows (commentaires conditionnels)
+      - background-image CSS avec voile navy → Gmail, Apple Mail, Samsung Mail
+        (le voile foncé garantit la lisibilité et l'unité de marque)
+      - Outlook Windows → fond navy uni via les commentaires conditionnels
+        (pas d'image : le texte reste toujours lisible)
     """
     bg_url = hero_image_url or HERO_IMAGE_URL
     badge_col = ""
@@ -47,11 +52,11 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
                      align="right">
                 <tr>
                   <td class="ref-badge-inner"
-                      style="background-color:#0a0a14;border:1px solid #4d3f00;
-                             border-radius:8px;padding:8px 14px;text-align:right;">
-                    <div style="font-family:Arial,sans-serif;font-size:11px;
-                                font-weight:600;color:#fde047;letter-spacing:0.5px;
-                                line-height:1.3;">
+                      style="background-color:#122748;border:1px solid #c7a253;
+                             border-radius:20px;padding:7px 16px;text-align:right;">
+                    <div style="font-family:Arial,sans-serif;font-size:10px;
+                                font-weight:700;color:#d9b979;letter-spacing:1.5px;
+                                text-transform:uppercase;line-height:1.3;">
                       {email_type_label}
                     </div>
                   </td>
@@ -62,22 +67,18 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
     cols = 2 if email_type_label else 1
 
     return f"""
-    <!--[if mso | IE]><tr><td style="background-color:#1a1a2e;padding:0;"><![endif]-->
+    <!--[if mso | IE]>
+    <tr><td style="background-color:#163057;padding:32px 36px 30px 36px;">
+    <![endif]-->
+    <!--[if !mso]><!-->
     <tr>
       <td class="hero-td"
-          background="{bg_url}"
-          style="background-color:#1a1a2e;
-                 background-image:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url('{bg_url}');
+          style="background-color:#163057;
+                 background-image:linear-gradient(rgba(22,48,87,0.78),rgba(18,39,72,0.86)),url('{bg_url}');
                  background-size:cover;background-position:center center;
                  background-repeat:no-repeat;
-                 padding:28px 32px;height:200px;vertical-align:middle;">
-
-        <!--[if mso | IE]>
-        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
-                style="width:680px;height:200px;position:absolute;">
-          <v:fill type="frame" src="{bg_url}" color="#1a1a2e"/>
-          <v:textbox inset="0,0,0,0">
-        <![endif]-->
+                 padding:32px 36px 30px 36px;">
+    <!--<![endif]-->
 
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
 
@@ -88,20 +89,20 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
                 <tr>
                   <td valign="middle" style="padding-right:12px;vertical-align:middle;">
                     <img class="logo-img" src="{LOGO_URL}" alt="Athena Event"
-                         width="44" height="44"
-                         style="width:44px;height:44px;border-radius:10px;
-                                border:1.5px solid #7a6500;display:block;" />
+                         width="40" height="40"
+                         style="width:40px;height:40px;border-radius:10px;
+                                border:1px solid #c7a253;display:block;" />
                   </td>
                   <td valign="middle" style="vertical-align:middle;">
                     <div class="brand-name"
                          style="font-family:Georgia,'Times New Roman',serif;
-                                font-size:21px;font-weight:700;color:#ffffff;
-                                line-height:1.2;margin:0;">
+                                font-size:19px;color:#ffffff;
+                                line-height:1.2;margin:0;letter-spacing:.5px;">
                       Athena Event
                     </div>
                     <div class="brand-sub"
-                         style="font-family:Arial,sans-serif;font-size:10px;
-                                color:#c9a800;letter-spacing:2.5px;
+                         style="font-family:Arial,sans-serif;font-size:9px;
+                                color:#9fb0c9;letter-spacing:2.5px;
                                 text-transform:uppercase;margin-top:3px;">
                       by Clearmind Analytics
                     </div>
@@ -114,25 +115,24 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
           <!-- Spacer -->
           <tr>
-            <td colspan="{cols}" style="height:18px;font-size:1px;line-height:1px;">&nbsp;</td>
+            <td colspan="{cols}" style="height:24px;font-size:1px;line-height:1px;">&nbsp;</td>
           </tr>
 
-          <!-- Ligne 2 : Titre + sous-titre -->
+          <!-- Ligne 2 : Filet doré + titre + sous-titre -->
           <tr>
             <td colspan="{cols}">
-              <div style="width:36px;height:2px;background-color:#fde047;
-                          margin-bottom:10px;"></div>
+              <div style="width:44px;height:2px;background-color:#c7a253;
+                          margin-bottom:14px;font-size:0;line-height:2px;">&nbsp;</div>
               <div class="hero-title"
                    style="font-family:Georgia,'Times New Roman',serif;
-                          font-size:20px;font-weight:700;color:#ffffff;
-                          line-height:1.3;margin:0;
-                          text-shadow:0 1px 4px rgba(0,0,0,0.9);">
+                          font-size:25px;color:#ffffff;
+                          line-height:31px;margin:0;">
                 {title}
               </div>
               <div class="hero-sub"
-                   style="font-family:Arial,sans-serif;font-size:12px;
-                          color:#ffffff;margin-top:6px;letter-spacing:0.3px;
-                          text-shadow:0 1px 3px rgba(0,0,0,0.9);">
+                   style="font-family:Arial,sans-serif;font-size:13px;
+                          color:#d7deea;margin-top:8px;letter-spacing:.3px;
+                          line-height:1.5;">
                 {subtitle}
               </div>
             </td>
@@ -140,15 +140,16 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
         </table>
 
-        <!--[if mso | IE]></v:textbox></v:rect><![endif]-->
+    <!--[if mso | IE]></td></tr><![endif]-->
+    <!--[if !mso]><!-->
       </td>
     </tr>
-    <!--[if mso | IE]></td></tr><![endif]-->
+    <!--<![endif]-->
 
-    <!-- Bande dorée accent sous le hero -->
+    <!-- Filet doré accent sous le hero -->
     <tr>
-      <td style="height:4px;font-size:4px;line-height:4px;
-                 background-color:#fbbf24;">&nbsp;</td>
+      <td style="height:3px;font-size:3px;line-height:3px;
+                 background-color:#c7a253;">&nbsp;</td>
     </tr>
 """
 
@@ -157,34 +158,37 @@ def _body_open(greeting: str, intro: str) -> str:
     """Ouvre la zone de contenu : salutation + paragraphe d'introduction."""
     return f"""
     <tr>
-      <td class="body-td" style="padding:36px 36px 0 36px;">
-        <p style="margin:0 0 8px 0;font-family:Georgia,'Times New Roman',serif;
-                  font-size:19px;font-weight:700;color:#1c1917;line-height:1.3;">
+      <td class="body-td" style="padding:36px 40px 0 40px;">
+        <p style="margin:0 0 10px 0;font-family:Georgia,'Times New Roman',serif;
+                  font-size:20px;color:#163057;line-height:1.35;">
           {greeting}
         </p>
         <p style="margin:0 0 24px 0;font-family:Arial,sans-serif;
-                  font-size:15px;color:#57534e;line-height:1.75;">
+                  font-size:15px;color:#3b4453;line-height:1.75;">
           {intro}
         </p>
 """
 
 
 def _body_close(sign_off: str = "Cordialement,") -> str:
-    """Ferme la zone de contenu : séparateur doré + signature."""
+    """Ferme la zone de contenu : filet doré + signature."""
     return f"""
         <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                width="100%" style="margin-top:32px;">
           <tr>
-            <td width="80" style="height:1px;background-color:#fde047;
+            <td width="44" style="height:2px;background-color:#c7a253;
                                    font-size:1px;line-height:1px;">&nbsp;</td>
-            <td style="height:1px;background-color:#f0e8c0;
+            <td style="height:1px;background-color:#ffffff;
                        font-size:1px;line-height:1px;">&nbsp;</td>
           </tr>
         </table>
-        <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;
-                  font-size:15px;color:#44403c;line-height:1.7;">
-          {sign_off}<br>
-          <strong style="color:#1c1917;">L'équipe Athena Event</strong>
+        <p style="margin:18px 0 0 0;font-family:Arial,sans-serif;
+                  font-size:15px;color:#3b4453;line-height:1.7;">
+          {sign_off}
+        </p>
+        <p style="margin:4px 0 0 0;font-family:Georgia,'Times New Roman',serif;
+                  font-size:16px;color:#163057;">
+          L'équipe Athena Event
         </p>
       </td>
     </tr>
@@ -194,20 +198,21 @@ def _body_close(sign_off: str = "Cordialement,") -> str:
 
 def _info_card(rows_html: str, label: str = "DÉTAILS") -> str:
     """
-    Encadré jaune avec bordure left dorée.
+    Carte blanche à liseré doré (même langage visuel que les cartes
+    de mise en relation Athena).
     rows_html : lignes générées par _info_row()
-    label     : titre de la card en petites capitales
+    label     : titre de la card en petites capitales dorées
     """
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:24px 0;">
       <tr>
         <td class="card-td"
-            style="background-color:#fffbeb;border-radius:10px;
-                   border:1px solid #fde68a;padding:20px 22px;">
-          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
-                     font-weight:700;color:#b45309;text-transform:uppercase;
-                     letter-spacing:2.5px;">
+            style="background-color:#ffffff;border:1px solid #e6e9ef;
+                   border-radius:10px;padding:20px 22px;">
+          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:11px;
+                     font-weight:700;color:#c7a253;text-transform:uppercase;
+                     letter-spacing:2px;">
             {label}
           </p>
           {rows_html}
@@ -219,13 +224,15 @@ def _info_card(rows_html: str, label: str = "DÉTAILS") -> str:
 
 def _info_row(icon: str, label: str, value: str) -> str:
     """
-    Ligne d'information avec icône.
+    Ligne d'information "Label : valeur".
     Utilise une table pour l'alignement (flex non supporté dans tous les clients email).
+    icon : conservé pour compatibilité — laisser vide de préférence
+           (les emojis se rendent différemment selon les clients).
     """
     icon_cell = f"""
         <td valign="top" width="22"
             style="font-family:Arial,sans-serif;font-size:14px;
-                   color:#57534e;padding-top:1px;vertical-align:top;">
+                   color:#5a6577;padding-top:1px;vertical-align:top;">
           {icon}
         </td>""" if icon else ""
     return f"""
@@ -234,8 +241,8 @@ def _info_row(icon: str, label: str, value: str) -> str:
       <tr>
         {icon_cell}
         <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
-                                 color:#57534e;line-height:1.5;vertical-align:top;">
-          <strong style="color:#44403c;">{label}&nbsp;:</strong> {value}
+                                 color:#3b4453;line-height:1.55;vertical-align:top;">
+          <strong style="color:#163057;">{label}&nbsp;:</strong> {value}
         </td>
       </tr>
     </table>
@@ -244,9 +251,9 @@ def _info_row(icon: str, label: str, value: str) -> str:
 
 def _qr_block(qr_token: str = "") -> str:
     """
-    Bloc QR code centré sur fond sombre.
+    Bloc QR code centré sur fond navy profond.
     L'image est injectée via Content-ID (src="cid:qrcode") — pas une URL externe.
-    La frame blanche autour du QR est nécessaire pour le contraste sur fond dark.
+    La frame blanche autour du QR est nécessaire pour le contraste sur fond sombre.
     Taille réduite à 160px sur mobile via .qr-img.
     """
     return f"""
@@ -254,22 +261,27 @@ def _qr_block(qr_token: str = "") -> str:
            width="100%" style="margin:28px 0;">
       <tr>
         <td class="qr-td" align="center"
-            style="background-color:#1a1a2e;border-radius:14px;
-                   padding:28px 24px;text-align:center;border:1px solid #2d2d4a;">
+            style="background-color:#122748;border-radius:12px;
+                   padding:28px 24px;text-align:center;">
 
           <!-- Label au-dessus du QR -->
-          <p style="margin:0 0 16px 0;font-family:Arial,sans-serif;font-size:10px;
-                     color:#b89000;text-transform:uppercase;letter-spacing:3px;">
+          <p style="margin:0 0 6px 0;font-family:Arial,sans-serif;font-size:10px;
+                     font-weight:700;color:#c7a253;text-transform:uppercase;
+                     letter-spacing:3px;">
             Votre code d'acc&#232;s personnel
           </p>
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
+            <tr><td style="width:36px;height:2px;background-color:#c7a253;
+                            font-size:0;line-height:2px;">&nbsp;</td></tr>
+          </table>
 
-          <!-- Frame blanche avec bordure dorée autour du QR -->
+          <!-- Frame blanche avec liseré doré autour du QR -->
           <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-                 align="center">
+                 align="center" style="margin-top:16px;">
             <tr>
               <td class="qr-frame-td"
                   style="background-color:#ffffff;border-radius:10px;
-                         padding:14px;border:2px solid #fbbf24;">
+                         padding:14px;border:1px solid #c7a253;">
                 <img class="qr-img"
                      src="cid:qrcode"
                      alt="QR Code d'acc&#232;s"
@@ -281,7 +293,7 @@ def _qr_block(qr_token: str = "") -> str:
 
           <!-- Instruction sous le QR -->
           <p style="margin:16px 0 0 0;font-family:Arial,sans-serif;font-size:13px;
-                     color:#c9a800;line-height:1.6;">
+                     color:#d7deea;line-height:1.6;">
             {qr_token}
           </p>
 
@@ -293,7 +305,7 @@ def _qr_block(qr_token: str = "") -> str:
 
 def _security_card(items: list) -> str:
     """
-    Card sécurité avec puces rouges.
+    Card sécurité : fond rosé discret, puces assorties.
     items : liste de chaînes HTML décrivant chaque consigne.
     Utilise des <div> pour les puces (pas de <ul><li> — mal supportés dans Gmail).
     """
@@ -303,16 +315,16 @@ def _security_card(items: list) -> str:
         <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                width="100%" style="margin-bottom:8px;">
           <tr>
-            <!-- Puce rouge -->
+            <!-- Puce brique -->
             <td valign="top" width="14"
-                style="vertical-align:top;padding-top:5px;padding-right:8px;">
-              <div style="width:6px;height:6px;background-color:#dc2626;
-                          border-radius:50%;"></div>
+                style="vertical-align:top;padding-top:6px;padding-right:8px;">
+              <div style="width:5px;height:5px;background-color:#b3564d;
+                          border-radius:50%;font-size:0;line-height:5px;">&nbsp;</div>
             </td>
             <!-- Texte de la consigne -->
             <td class="sec-text-td" valign="top"
                 style="font-family:Arial,sans-serif;font-size:13px;
-                       color:#7f1d1d;line-height:1.65;vertical-align:top;">
+                       color:#8c4640;line-height:1.65;vertical-align:top;">
               {item}
             </td>
           </tr>
@@ -323,11 +335,11 @@ def _security_card(items: list) -> str:
            width="100%" style="margin:24px 0;">
       <tr>
         <td class="card-td"
-            style="background-color:#fff5f5;border-radius:10px;
-                   border:1px solid #fecaca;padding:20px 22px;">
-          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
-                     font-weight:700;color:#991b1b;text-transform:uppercase;
-                     letter-spacing:2.5px;">
+            style="background-color:#fbf1f0;border-radius:10px;
+                   padding:20px 22px;">
+          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:11px;
+                     font-weight:700;color:#b3564d;text-transform:uppercase;
+                     letter-spacing:2px;">
             Consignes de s&#233;curit&#233; importantes
           </p>
           {rows_html}
@@ -339,70 +351,37 @@ def _security_card(items: list) -> str:
 
 def _footer() -> str:
     """
-    Pied de page : logo mini + séparateur doré + contacts + copyright.
-    Deux colonnes sur desktop, empilées sur mobile.
+    Pied de page navy : devise, contacts, copyright — centrés.
     """
     year = datetime.now().year
     return f"""
     <tr>
       <td class="footer-td"
-          style="background-color:#fafaf5;border-top:1px solid #f0e8c0;padding:28px 36px;">
+          style="background-color:#122748;padding:28px 36px;text-align:center;">
 
-        <!-- Logo mini -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-               width="100%" style="margin-bottom:18px;">
-          <tr>
-            <td valign="middle" style="vertical-align:middle;">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td valign="middle" style="padding-right:10px;vertical-align:middle;">
-                    <img src="{LOGO_URL}" alt="AE" width="28" height="28"
-                         style="width:28px;height:28px;border-radius:7px;display:block;" />
-                  </td>
-                  <td valign="middle" style="vertical-align:middle;">
-                    <span style="font-family:Georgia,'Times New Roman',serif;
-                                 font-size:14px;font-weight:700;color:#1a1a2e;">
-                      Athena Event
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+        <div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;
+                    font-size:14px;color:#c7d0df;padding-bottom:14px;">
+          Connect. Measure. Grow.
+        </div>
+
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
+          <tr><td style="width:36px;height:1px;background-color:#c7a253;
+                          font-size:0;line-height:1px;">&nbsp;</td></tr>
         </table>
 
-        <!-- Séparateur -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-               width="100%" style="margin-bottom:18px;">
-          <tr>
-            <td width="80" style="height:1px;background-color:#fde047;
-                                   font-size:1px;line-height:1px;">&nbsp;</td>
-            <td style="height:1px;background-color:#f0e8c0;
-                       font-size:1px;line-height:1px;">&nbsp;</td>
-          </tr>
-        </table>
+        <div style="font-family:Arial,sans-serif;font-size:12px;color:#8ea0bb;
+                    padding-top:14px;padding-bottom:12px;line-height:1.9;">
+          <a href="tel:+261383204613" style="color:#c7d0df;text-decoration:none;">+261 38 32 046 13</a>
+          &nbsp;<span style="color:#c7a253;">&middot;</span>&nbsp;
+          <a href="mailto:sales@athena-event.com" style="color:#c7d0df;text-decoration:none;">sales@athena-event.com</a>
+          &nbsp;<span style="color:#c7a253;">&middot;</span>&nbsp;
+          <a href="https://www.athena-event.com" style="color:#c7d0df;text-decoration:none;">www.athena-event.com</a>
+        </div>
 
-        <!-- Contacts (gauche) + Copyright (droite) -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128222;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-                    <a href="tel:+261383204613" style="color:#78716c;text-decoration:none;">+261 38 32 046 13</a>
-                </td>
-            </tr>
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-                    <a href="mailto:sales@athena-event.com" style="color:#78716c;text-decoration:none;">sales@athena-event.com</a>
-                </td>
-            </tr>
-            <tr>
-                <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#127760;</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;">
-                    <a href="https://www.athena-event.com" style="color:#78716c;text-decoration:none;">www.athena-event.com</a>
-                </td>
-            </tr>
-        </table>
+        <div style="font-family:Arial,sans-serif;font-size:11px;line-height:16px;
+                    color:#6f83a0;">
+          &copy; {year} Athena Event by Clearmind Analytics &mdash; Antananarivo, Madagascar
+        </div>
 
       </td>
     </tr>

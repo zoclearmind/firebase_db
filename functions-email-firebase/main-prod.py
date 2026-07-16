@@ -84,26 +84,26 @@ def _base_styles() -> str:
                                border-radius:0 !important; }
 
             /* Hero plus compact */
-            .hero-td        { height:185px !important; padding:20px 16px !important; }
+            .hero-td        { padding:26px 20px 24px 20px !important; }
 
             /* Logo + nom de marque : empilés verticalement */
             .logo-brand-td  { display:block !important; width:100% !important; }
-            .logo-img       { width:36px !important; height:36px !important; }
-            .brand-name     { font-size:17px !important; }
+            .logo-img       { width:34px !important; height:34px !important; }
+            .brand-name     { font-size:16px !important; }
             .brand-sub      { font-size:9px !important; }
 
             /* Badge type email : passe sous le logo, aligné à gauche */
             .ref-badge-td    { display:block !important; width:100% !important;
                                text-align:left !important;
-                               padding-top:10px !important; padding-left:0 !important; }
+                               padding-top:12px !important; padding-left:0 !important; }
             .ref-badge-inner { text-align:left !important; }
 
             /* Titres hero plus petits */
-            .hero-title     { font-size:17px !important; }
-            .hero-sub       { font-size:11px !important; }
+            .hero-title     { font-size:21px !important; line-height:27px !important; }
+            .hero-sub       { font-size:12px !important; }
 
             /* Corps de l'email : padding réduit */
-            .body-td        { padding:24px 16px 0 16px !important; }
+            .body-td        { padding:26px 20px 0 20px !important; }
 
             /* Cards : padding réduit */
             .card-td        { padding:16px !important; }
@@ -112,12 +112,12 @@ def _base_styles() -> str:
             .cta-td         { padding:14px 24px !important; }
             .cta-link       { font-size:14px !important; }
 
-            /* Bloc code d'activation */
-            .code-block-td  { padding:20px 14px !important; }
-            .code-val       { font-size:30px !important; letter-spacing:8px !important; }
+            /* Bloc code */
+            .code-block-td  { padding:22px 14px !important; }
+            .code-val       { font-size:28px !important; letter-spacing:8px !important; }
 
             /* Footer */
-            .footer-td      { padding:22px 16px !important; }
+            .footer-td      { padding:24px 20px !important; }
 
             /* Footer : deux colonnes → empilées verticalement */
             .footer-col-l   { display:block !important; width:100% !important; }
@@ -139,7 +139,7 @@ def _preheader(text: str) -> str:
     filler = "&nbsp;&#8204;" * 60
     return (
         f'<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;'
-        f'font-size:1px;color:#fafafa;line-height:1px;">{text}{filler}</div>'
+        f'font-size:1px;color:#eef1f5;line-height:1px;">{text}{filler}</div>'
     )
 
 
@@ -163,21 +163,21 @@ def _email_open(preheader_text: str = "") -> str:
     <![endif]-->
     <style>{_base_styles()}</style>
 </head>
-<body style="margin:0;padding:0;background-color:#ede9de;word-spacing:normal;">
+<body style="margin:0;padding:0;background-color:#eef1f5;word-spacing:normal;">
 {_preheader(preheader_text)}
 <!--[if mso | IE]>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-       width="100%" style="background-color:#ede9de;"><tr><td>
+       width="100%" style="background-color:#eef1f5;"><tr><td>
 <![endif]-->
 <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-       width="100%" style="background-color:#ede9de;">
+       width="100%" style="background-color:#eef1f5;">
   <tr>
-    <td class="email-outer-td" align="center" style="padding:32px 16px;">
+    <td class="email-outer-td" align="center" style="padding:28px 16px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0"
              class="email-shell"
              style="width:680px;max-width:680px;background-color:#ffffff;
-                    border-radius:16px;overflow:hidden;
-                    box-shadow:0 8px 40px rgba(0,0,0,0.13);">
+                    border-radius:14px;overflow:hidden;
+                    box-shadow:0 8px 28px rgba(20,41,77,0.10);">
 """
 
 
@@ -190,7 +190,7 @@ def _email_close() -> str:
         <tr>
           <td class="below-note" align="center"
               style="padding:14px 32px 0;font-family:Arial,sans-serif;
-                     font-size:11px;color:#a8a29e;line-height:1.6;">
+                     font-size:11px;color:#8a93a3;line-height:1.6;">
             Cet email a été envoyé automatiquement par la plateforme Athena Event.<br>
             Merci de ne pas y répondre directement.
           </td>
@@ -211,16 +211,18 @@ def _email_close() -> str:
 
 def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url: str = "") -> str:
     """
-    Bandeau hero avec image de fond, logo, nom de marque.
+    Bandeau hero navy : logo + marque à gauche, badge doré à droite,
+    filet doré, titre Georgia et sous-titre.
 
     email_type_label : texte affiché dans le badge en haut à droite du hero.
     hero_image_url   : image de fond personnalisée (ex: image de l'événement).
                        Si vide, utilise HERO_IMAGE_URL par défaut.
 
     Technique image de fond :
-      - background-image CSS  → Gmail, Apple Mail, Samsung Mail
-      - attribut background=  → clients anciens
-      - VML v:rect            → Outlook Windows (commentaires conditionnels)
+      - background-image CSS avec voile navy → Gmail, Apple Mail, Samsung Mail
+        (le voile foncé garantit la lisibilité et l'unité de marque)
+      - Outlook Windows → fond navy uni via les commentaires conditionnels
+        (pas d'image : le texte reste toujours lisible)
     """
     bg_url = hero_image_url or HERO_IMAGE_URL
     badge_col = ""
@@ -232,11 +234,11 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
                      align="right">
                 <tr>
                   <td class="ref-badge-inner"
-                      style="background-color:#0a0a14;border:1px solid #4d3f00;
-                             border-radius:8px;padding:8px 14px;text-align:right;">
-                    <div style="font-family:Arial,sans-serif;font-size:11px;
-                                font-weight:600;color:#fde047;letter-spacing:0.5px;
-                                line-height:1.3;">
+                      style="background-color:#122748;border:1px solid #c7a253;
+                             border-radius:20px;padding:7px 16px;text-align:right;">
+                    <div style="font-family:Arial,sans-serif;font-size:10px;
+                                font-weight:700;color:#d9b979;letter-spacing:1.5px;
+                                text-transform:uppercase;line-height:1.3;">
                       {email_type_label}
                     </div>
                   </td>
@@ -247,22 +249,18 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
     cols = 2 if email_type_label else 1
 
     return f"""
-    <!--[if mso | IE]><tr><td style="background-color:#1a1a2e;padding:0;"><![endif]-->
+    <!--[if mso | IE]>
+    <tr><td style="background-color:#163057;padding:32px 36px 30px 36px;">
+    <![endif]-->
+    <!--[if !mso]><!-->
     <tr>
       <td class="hero-td"
-          background="{bg_url}"
-          style="background-color:#1a1a2e;
-                 background-image:linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)),url('{bg_url}');
+          style="background-color:#163057;
+                 background-image:linear-gradient(rgba(22,48,87,0.78),rgba(18,39,72,0.86)),url('{bg_url}');
                  background-size:cover;background-position:center center;
                  background-repeat:no-repeat;
-                 padding:28px 32px;height:200px;vertical-align:middle;">
-
-        <!--[if mso | IE]>
-        <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false"
-                style="width:680px;height:200px;position:absolute;">
-          <v:fill type="frame" src="{bg_url}" color="#1a1a2e"/>
-          <v:textbox inset="0,0,0,0">
-        <![endif]-->
+                 padding:32px 36px 30px 36px;">
+    <!--<![endif]-->
 
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
 
@@ -273,20 +271,20 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
                 <tr>
                   <td valign="middle" style="padding-right:12px;vertical-align:middle;">
                     <img class="logo-img" src="{LOGO_URL}" alt="Athena Event"
-                         width="44" height="44"
-                         style="width:44px;height:44px;border-radius:10px;
-                                border:1.5px solid #7a6500;display:block;" />
+                         width="40" height="40"
+                         style="width:40px;height:40px;border-radius:10px;
+                                border:1px solid #c7a253;display:block;" />
                   </td>
                   <td valign="middle" style="vertical-align:middle;">
                     <div class="brand-name"
                          style="font-family:Georgia,'Times New Roman',serif;
-                                font-size:21px;font-weight:700;color:#ffffff;
-                                line-height:1.2;margin:0;">
+                                font-size:19px;color:#ffffff;
+                                line-height:1.2;margin:0;letter-spacing:.5px;">
                       Athena Event
                     </div>
                     <div class="brand-sub"
-                         style="font-family:Arial,sans-serif;font-size:10px;
-                                color:#c9a800;letter-spacing:2.5px;
+                         style="font-family:Arial,sans-serif;font-size:9px;
+                                color:#9fb0c9;letter-spacing:2.5px;
                                 text-transform:uppercase;margin-top:3px;">
                       by Clearmind Analytics
                     </div>
@@ -299,25 +297,24 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
           <!-- Spacer -->
           <tr>
-            <td colspan="{cols}" style="height:18px;font-size:1px;line-height:1px;">&nbsp;</td>
+            <td colspan="{cols}" style="height:24px;font-size:1px;line-height:1px;">&nbsp;</td>
           </tr>
 
-          <!-- Ligne 2 : Titre + sous-titre -->
+          <!-- Ligne 2 : Filet doré + titre + sous-titre -->
           <tr>
             <td colspan="{cols}">
-              <div style="width:36px;height:2px;background-color:#fde047;
-                          margin-bottom:10px;"></div>
+              <div style="width:44px;height:2px;background-color:#c7a253;
+                          margin-bottom:14px;font-size:0;line-height:2px;">&nbsp;</div>
               <div class="hero-title"
                    style="font-family:Georgia,'Times New Roman',serif;
-                          font-size:20px;font-weight:700;color:#ffffff;
-                          line-height:1.3;margin:0;
-                          text-shadow:0 1px 4px rgba(0,0,0,0.9);">
+                          font-size:25px;color:#ffffff;
+                          line-height:31px;margin:0;">
                 {title}
               </div>
               <div class="hero-sub"
-                   style="font-family:Arial,sans-serif;font-size:12px;
-                          color:#ffffff;margin-top:6px;letter-spacing:0.3px;
-                          text-shadow:0 1px 3px rgba(0,0,0,0.9);">
+                   style="font-family:Arial,sans-serif;font-size:13px;
+                          color:#d7deea;margin-top:8px;letter-spacing:.3px;
+                          line-height:1.5;">
                 {subtitle}
               </div>
             </td>
@@ -325,15 +322,16 @@ def _hero(title: str, subtitle: str, email_type_label: str = "", hero_image_url:
 
         </table>
 
-        <!--[if mso | IE]></v:textbox></v:rect><![endif]-->
+    <!--[if mso | IE]></td></tr><![endif]-->
+    <!--[if !mso]><!-->
       </td>
     </tr>
-    <!--[if mso | IE]></td></tr><![endif]-->
+    <!--<![endif]-->
 
-    <!-- Bande dorée accent sous le hero -->
+    <!-- Filet doré accent sous le hero -->
     <tr>
-      <td style="height:4px;font-size:4px;line-height:4px;
-                 background-color:#fbbf24;">&nbsp;</td>
+      <td style="height:3px;font-size:3px;line-height:3px;
+                 background-color:#c7a253;">&nbsp;</td>
     </tr>
 """
 
@@ -342,34 +340,37 @@ def _body_open(greeting: str, intro: str) -> str:
     """Ouvre la zone de contenu : salutation + paragraphe d'introduction."""
     return f"""
     <tr>
-      <td class="body-td" style="padding:36px 36px 0 36px;">
-        <p style="margin:0 0 8px 0;font-family:Georgia,'Times New Roman',serif;
-                  font-size:19px;font-weight:700;color:#1c1917;line-height:1.3;">
+      <td class="body-td" style="padding:36px 40px 0 40px;">
+        <p style="margin:0 0 10px 0;font-family:Georgia,'Times New Roman',serif;
+                  font-size:20px;color:#163057;line-height:1.35;">
           {greeting}
         </p>
         <p style="margin:0 0 24px 0;font-family:Arial,sans-serif;
-                  font-size:15px;color:#57534e;line-height:1.75;">
+                  font-size:15px;color:#3b4453;line-height:1.75;">
           {intro}
         </p>
 """
 
 
 def _body_close(sign_off: str = "Cordialement,") -> str:
-    """Ferme la zone de contenu : séparateur doré + signature."""
+    """Ferme la zone de contenu : filet doré + signature."""
     return f"""
         <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                width="100%" style="margin-top:32px;">
           <tr>
-            <td width="80" style="height:1px;background-color:#fde047;
+            <td width="44" style="height:2px;background-color:#c7a253;
                                    font-size:1px;line-height:1px;">&nbsp;</td>
-            <td style="height:1px;background-color:#f0e8c0;
+            <td style="height:1px;background-color:#ffffff;
                        font-size:1px;line-height:1px;">&nbsp;</td>
           </tr>
         </table>
-        <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;
-                  font-size:15px;color:#44403c;line-height:1.7;">
-          {sign_off}<br>
-          <strong style="color:#1c1917;">L'équipe Athena Event</strong>
+        <p style="margin:18px 0 0 0;font-family:Arial,sans-serif;
+                  font-size:15px;color:#3b4453;line-height:1.7;">
+          {sign_off}
+        </p>
+        <p style="margin:4px 0 0 0;font-family:Georgia,'Times New Roman',serif;
+                  font-size:16px;color:#163057;">
+          L'équipe Athena Event
         </p>
       </td>
     </tr>
@@ -379,20 +380,21 @@ def _body_close(sign_off: str = "Cordialement,") -> str:
 
 def _info_card(rows_html: str, label: str = "DÉTAILS") -> str:
     """
-    Encadré jaune avec bordure left dorée.
+    Carte blanche à liseré doré (même langage visuel que les cartes
+    de mise en relation Athena).
     rows_html : lignes générées par _info_row()
-    label     : titre de la card en petites capitales
+    label     : titre de la card en petites capitales dorées
     """
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:24px 0;">
       <tr>
         <td class="card-td"
-            style="background-color:#fffbeb;border-radius:10px;
-                   border:1px solid #fde68a;padding:20px 22px;">
-          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:10px;
-                     font-weight:700;color:#b45309;text-transform:uppercase;
-                     letter-spacing:2.5px;">
+            style="background-color:#ffffff;border:1px solid #e6e9ef;
+                   border-radius:10px;padding:20px 22px;">
+          <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:11px;
+                     font-weight:700;color:#c7a253;text-transform:uppercase;
+                     letter-spacing:2px;">
             {label}
           </p>
           {rows_html}
@@ -404,13 +406,15 @@ def _info_card(rows_html: str, label: str = "DÉTAILS") -> str:
 
 def _info_row(icon: str, label: str, value: str) -> str:
     """
-    Ligne d'information avec icône.
+    Ligne d'information "Label : valeur".
     Utilise une table pour l'alignement (flex non supporté dans tous les clients email).
+    icon : conservé pour compatibilité — laisser vide de préférence
+           (les emojis se rendent différemment selon les clients).
     """
     icon_cell = f"""
         <td valign="top" width="22"
             style="font-family:Arial,sans-serif;font-size:14px;
-                   color:#57534e;padding-top:1px;vertical-align:top;">
+                   color:#5a6577;padding-top:1px;vertical-align:top;">
           {icon}
         </td>""" if icon else ""
     return f"""
@@ -419,8 +423,8 @@ def _info_row(icon: str, label: str, value: str) -> str:
       <tr>
         {icon_cell}
         <td valign="top" style="font-family:Arial,sans-serif;font-size:14px;
-                                 color:#57534e;line-height:1.5;vertical-align:top;">
-          <strong style="color:#44403c;">{label}&nbsp;:</strong> {value}
+                                 color:#3b4453;line-height:1.55;vertical-align:top;">
+          <strong style="color:#163057;">{label}&nbsp;:</strong> {value}
         </td>
       </tr>
     </table>
@@ -429,7 +433,7 @@ def _info_row(icon: str, label: str, value: str) -> str:
 
 def _cta_button(url: str, label: str) -> str:
     """
-    Bouton call-to-action centré.
+    Bouton call-to-action centré : navy, texte blanc, coins arrondis.
     Technique double :
       - VML v:roundrect pour Outlook Windows (commentaires conditionnels)
       - <a> inline-block pour tous les autres clients
@@ -444,10 +448,10 @@ def _cta_button(url: str, label: str) -> str:
                        xmlns:w="urn:schemas-microsoft-com:office:word"
                        href="{url}"
                        style="height:50px;v-text-anchor:middle;width:280px;"
-                       arcsize="20%" strokecolor="#fde047" strokeweight="1pt"
-                       fillcolor="#1a1a2e">
+                       arcsize="16%" strokecolor="#163057" strokeweight="1pt"
+                       fillcolor="#163057">
             <w:anchorlock/>
-            <center style="color:#fde047;font-family:Arial,sans-serif;
+            <center style="color:#ffffff;font-family:Arial,sans-serif;
                            font-size:15px;font-weight:bold;">
               {label}
             </center>
@@ -455,10 +459,10 @@ def _cta_button(url: str, label: str) -> str:
           <![endif]-->
           <!--[if !mso]><!-->
           <a href="{url}" class="cta-link" target="_blank"
-             style="display:inline-block;background-color:#1a1a2e;
-                    color:#fde047;font-family:Arial,sans-serif;font-size:15px;
-                    font-weight:700;text-decoration:none;border-radius:10px;
-                    padding:16px 40px;mso-hide:all;border:1px solid #3a3a00;">
+             style="display:inline-block;background-color:#163057;
+                    color:#ffffff;font-family:Arial,sans-serif;font-size:15px;
+                    font-weight:700;letter-spacing:.5px;text-decoration:none;
+                    border-radius:8px;padding:15px 40px;mso-hide:all;">
             {label}
           </a>
           <!--<![endif]-->
@@ -472,12 +476,12 @@ def _cta_secondary(url: str, label: str) -> str:
     """Lien secondaire centré sous le bouton principal (ex: Décliner l'invitation)."""
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-           width="100%" style="margin:8px 0 0 0;">
+           width="100%" style="margin:10px 0 0 0;">
       <tr>
         <td align="center">
           <a href="{url}" target="_blank"
              style="font-family:Arial,sans-serif;font-size:13px;
-                    color:#9ca3af;text-decoration:underline;">
+                    color:#5a6577;text-decoration:underline;">
             {label}
           </a>
         </td>
@@ -488,20 +492,20 @@ def _cta_secondary(url: str, label: str) -> str:
 
 def _alert(content: str, variant: str = "warning") -> str:
     """
-    Encadré d'alerte avec bordure left colorée.
-    variant = "warning" → fond jaune pâle, bordure dorée
-    variant = "danger"  → fond rouge pâle, bordure rouge
+    Encadré discret.
+    variant = "warning" → fond ivoire (note, conseil)
+    variant = "danger"  → fond rosé (sécurité, vigilance)
     """
     styles = {
-        "warning": ("#fffbeb", "#fbbf24", "#92400e"),
-        "danger":  ("#fff5f5", "#ef4444", "#7f1d1d"),
+        "warning": ("#faf6ec", "#6d5a35"),
+        "danger":  ("#fbf1f0", "#8c4640"),
     }
-    bg, border, color = styles.get(variant, styles["warning"])
+    bg, color = styles.get(variant, styles["warning"])
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:20px 0;">
       <tr>
-        <td style="background-color:{bg};border-radius:8px;padding:14px 16px;">
+        <td style="background-color:{bg};border-radius:8px;padding:14px 18px;">
           <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;
                      color:{color};line-height:1.65;">
             {content}
@@ -514,7 +518,8 @@ def _alert(content: str, variant: str = "warning") -> str:
 
 def _code_block(code: str, label: str = "Code d'activation") -> str:
     """
-    Bloc fond sombre avec un code en grand centré.
+    Bloc navy profond avec un code en grand centré.
+    Réutilisé pour l'activation de compte ET le reset password.
     label : texte au-dessus du code (modifiable selon le contexte)
     """
     return f"""
@@ -522,16 +527,21 @@ def _code_block(code: str, label: str = "Code d'activation") -> str:
            width="100%" style="margin:28px 0;">
       <tr>
         <td class="code-block-td" align="center"
-            style="background-color:#1a1a2e;border-radius:14px;
-                   padding:28px 32px;text-align:center;border:1px solid #2d2d4a;">
-          <p style="margin:0 0 10px 0;font-family:Arial,sans-serif;font-size:10px;
-                     color:#b89000;text-transform:uppercase;letter-spacing:3px;">
+            style="background-color:#122748;border-radius:12px;
+                   padding:28px 32px;text-align:center;">
+          <p style="margin:0 0 6px 0;font-family:Arial,sans-serif;font-size:10px;
+                     font-weight:700;color:#c7a253;text-transform:uppercase;
+                     letter-spacing:3px;">
             {label}
           </p>
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
+            <tr><td style="width:36px;height:2px;background-color:#c7a253;
+                            font-size:0;line-height:2px;">&nbsp;</td></tr>
+          </table>
           <p class="code-val"
-             style="margin:0;font-family:'Courier New',Courier,monospace;
-                    font-size:40px;font-weight:700;color:#fde047;
-                    letter-spacing:14px;line-height:1;">
+             style="margin:14px 0 0 0;font-family:'Courier New',Courier,monospace;
+                    font-size:38px;font-weight:700;color:#ffffff;
+                    letter-spacing:12px;line-height:1;">
             {code}
           </p>
         </td>
@@ -543,7 +553,7 @@ def _code_block(code: str, label: str = "Code d'activation") -> str:
 def _steps_card(steps: list) -> str:
     """
     Card avec étapes numérotées.
-    steps : liste de chaînes HTML décrivant chaque étape
+    steps : liste de chaînes HTML décrivant chaque étape.
     Utilise des tables pour les puces numérotées (pas de <ol> — mal supporté).
     """
     rows_html = ""
@@ -553,14 +563,14 @@ def _steps_card(steps: list) -> str:
         <table role="presentation" border="0" cellpadding="0" cellspacing="0"
                width="100%" {margin}>
           <tr>
-            <td valign="top" width="36" style="vertical-align:top;padding-top:2px;">
+            <td valign="top" width="38" style="vertical-align:top;padding-top:1px;">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td width="28" height="28" align="center" valign="middle"
                       style="width:28px;height:28px;border-radius:50%;
-                             background-color:#fde047;text-align:center;
-                             font-family:Arial,sans-serif;font-size:13px;
-                             font-weight:700;color:#92400e;line-height:28px;">
+                             background-color:#163057;text-align:center;
+                             font-family:Georgia,'Times New Roman',serif;font-size:14px;
+                             color:#ffffff;line-height:28px;">
                     {i}
                   </td>
                 </tr>
@@ -568,7 +578,7 @@ def _steps_card(steps: list) -> str:
             </td>
             <td valign="top"
                 style="font-family:Arial,sans-serif;font-size:14px;
-                       color:#78716c;line-height:1.6;vertical-align:top;
+                       color:#5a6577;line-height:1.6;vertical-align:top;
                        padding-top:4px;">
               {step}
             </td>
@@ -580,11 +590,11 @@ def _steps_card(steps: list) -> str:
            width="100%" style="margin:24px 0;">
       <tr>
         <td class="card-td"
-            style="background-color:#fffbeb;border-radius:10px;
-                   border:1px solid #fde68a;padding:20px 22px;">
-          <p style="margin:0 0 16px 0;font-family:Arial,sans-serif;font-size:10px;
-                     font-weight:700;color:#b45309;text-transform:uppercase;
-                     letter-spacing:2.5px;">
+            style="background-color:#ffffff;border:1px solid #e6e9ef;
+                   border-radius:10px;padding:20px 22px;">
+          <p style="margin:0 0 16px 0;font-family:Arial,sans-serif;font-size:11px;
+                     font-weight:700;color:#c7a253;text-transform:uppercase;
+                     letter-spacing:2px;">
             Comment participer
           </p>
           {rows_html}
@@ -596,75 +606,37 @@ def _steps_card(steps: list) -> str:
 
 def _footer() -> str:
     """
-    Pied de page : logo mini + séparateur doré + contacts + copyright.
-    Deux colonnes sur desktop, empilées sur mobile.
+    Pied de page navy : devise, contacts, copyright — centrés.
     """
     year = datetime.now().year
     return f"""
     <tr>
       <td class="footer-td"
-          style="background-color:#fafaf5;border-top:1px solid #f0e8c0;padding:28px 36px;">
+          style="background-color:#122748;padding:28px 36px;text-align:center;">
 
-        <!-- Logo mini -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-               width="100%" style="margin-bottom:18px;">
-          <tr>
-            <td valign="middle" style="vertical-align:middle;">
-              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td valign="middle" style="padding-right:10px;vertical-align:middle;">
-                    <img src="{LOGO_URL}" alt="AE" width="28" height="28"
-                         style="width:28px;height:28px;border-radius:7px;display:block;" />
-                  </td>
-                  <td valign="middle" style="vertical-align:middle;">
-                    <span style="font-family:Georgia,'Times New Roman',serif;
-                                 font-size:14px;font-weight:700;color:#1a1a2e;">
-                      Athena Event
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+        <div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;
+                    font-size:14px;color:#c7d0df;padding-bottom:14px;">
+          Connect. Measure. Grow.
+        </div>
+
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
+          <tr><td style="width:36px;height:1px;background-color:#c7a253;
+                          font-size:0;line-height:1px;">&nbsp;</td></tr>
         </table>
 
-        <!-- Séparateur -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
-               width="100%" style="margin-bottom:18px;">
-          <tr>
-            <td width="80" style="height:1px;background-color:#fde047;
-                                   font-size:1px;line-height:1px;">&nbsp;</td>
-            <td style="height:1px;background-color:#f0e8c0;
-                       font-size:1px;line-height:1px;">&nbsp;</td>
-          </tr>
-        </table>
+        <div style="font-family:Arial,sans-serif;font-size:12px;color:#8ea0bb;
+                    padding-top:14px;padding-bottom:12px;line-height:1.9;">
+          <a href="tel:+261383204613" style="color:#c7d0df;text-decoration:none;">+261 38 32 046 13</a>
+          &nbsp;<span style="color:#c7a253;">&middot;</span>&nbsp;
+          <a href="mailto:sales@athena-event.com" style="color:#c7d0df;text-decoration:none;">sales@athena-event.com</a>
+          &nbsp;<span style="color:#c7a253;">&middot;</span>&nbsp;
+          <a href="https://www.athena-event.com" style="color:#c7d0df;text-decoration:none;">www.athena-event.com</a>
+        </div>
 
-        <!-- Contacts (gauche) + Copyright (droite) -->
-        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-          <tr>
-            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128222;</td>
-            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-              <a href="tel:+261383204613" style="color:#78716c;text-decoration:none;">+261 38 32 046 13</a>
-            </td>
-          </tr>
-          <tr>
-            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#128231;</td>
-            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;padding-bottom:6px;">
-              <a href="mailto:sales@athena-event.com" style="color:#78716c;text-decoration:none;">sales@athena-event.com</a>
-            </td>
-          </tr>
-          <tr>
-            <td width="20" valign="top" style="font-size:13px;padding-top:1px;">&#127760;</td>
-            <td style="font-family:Arial,sans-serif;font-size:13px;color:#78716c;">
-              <a href="https://www.athena-event.com" style="color:#78716c;text-decoration:none;">www.athena-event.com</a>
-            </td>
-          </tr>
-        </table>
-
-        <p style="margin:18px 0 0 0;font-family:Arial,sans-serif;font-size:11px;
-                   color:#a8a29e;line-height:1.7;">
-          &copy; {year} Athena Event by Clearmind Analytics — Antananarivo, Madagascar
-        </p>
+        <div style="font-family:Arial,sans-serif;font-size:11px;line-height:16px;
+                    color:#6f83a0;">
+          &copy; {year} Athena Event by Clearmind Analytics &mdash; Antananarivo, Madagascar
+        </div>
 
       </td>
     </tr>
@@ -950,11 +922,10 @@ def send_hostess_activation_link(
         _info_row("", "Email", email)
         + _info_row(
             "", "Mot de passe provisoire",
-            f"<code style='background-color:#f5f0e0;padding:2px 7px;"
+            f"<code style='background-color:#f2ede1;padding:2px 7px;"
             f"border-radius:4px;font-family:Courier New,monospace;"
-            f"font-size:13px;color:#44403c;'>{default_password}</code>"
+            f"font-size:13px;color:#163057;'>{default_password}</code>"
         )
-        + _info_row("", "ID utilisateur", user_id)
     )
 
     rows = (
@@ -974,7 +945,7 @@ def send_hostess_activation_link(
         + _info_card(creds_rows, label="Vos identifiants de connexion")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Cliquez sur le bouton ci-dessous pour activer votre compte
           et définir votre propre mot de passe :
         </p>
@@ -1000,8 +971,7 @@ def send_hostess_activation_link(
         f"Athena Event — Invitation Hôtesse\n\n"
         f"Bonjour {first_name} {last_name},\n\n"
         f"Email : {email}\n"
-        f"Mot de passe provisoire : {default_password}\n"
-        f"ID utilisateur : {user_id}\n\n"
+        f"Mot de passe provisoire : {default_password}\n\n"
         f"Activer mon compte : {activation_link}\n\n"
         "Changez votre mot de passe à la première connexion.\n\n"
         "Cordialement,\nL'équipe Athena Event",
@@ -1031,9 +1001,9 @@ def send_activation_link_organizer(
         _info_row("", "Email", email)
         + _info_row(
             "", "Mot de passe provisoire",
-            f"<code style='background-color:#f5f0e0;padding:2px 7px;"
+            f"<code style='background-color:#f2ede1;padding:2px 7px;"
             f"border-radius:4px;font-family:Courier New,monospace;"
-            f"font-size:13px;color:#44403c;'>{default_password}</code>"
+            f"font-size:13px;color:#163057;'>{default_password}</code>"
         )
         + _info_row("", "Entreprise", f"<strong>{company_name}</strong>")
     )
@@ -1055,7 +1025,7 @@ def send_activation_link_organizer(
         + _info_card(creds_rows, label="Vos identifiants de connexion")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Cliquez sur le bouton ci-dessous pour activer votre compte
           et définir votre propre mot de passe :
         </p>
@@ -1197,7 +1167,7 @@ def send_event_awaiting_approval(
         + _info_card(info_rows, label="RÉSUMÉ DE L'ÉVÉNEMENT")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Connectez-vous à votre tableau de bord administrateur pour 
           consulter les détails complets et approuver ou rejeter cet événement.
         </p>
@@ -1281,7 +1251,7 @@ def send_event_approved(
         + _info_card(info_rows, label="DÉTAILS DE L'ÉVÉNEMENT")
         + """
         <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Vous pouvez maintenant inviter des participants, gérer les inscriptions 
           et accéder à toutes les fonctionnalités de gestion d'événement.
         </p>
@@ -1358,7 +1328,7 @@ def send_participant_invitation_known(
         + _info_card(info_rows, label="DÉTAILS DE L'INVITATION")
         + """
         <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:15px;
-                   color:#57534e;line-height:1.75;">
+                   color:#3b4453;line-height:1.75;">
           Pour plus d'informations ou si vous avez des questions, n'hésitez pas
           à nous contacter. Notre équipe se tient à votre disposition.
         </p>
@@ -1411,11 +1381,11 @@ def send_participant_invitation_unknown(
 
     steps = [
         "Cliquez sur le bouton ci-dessous pour "
-        "<strong style='color:#44403c;'>créer votre compte gratuitement</strong>",
+        "<strong style='color:#163057;'>créer votre compte gratuitement</strong>",
         "Complétez les informations de "
-        "<strong style='color:#44403c;'>votre entreprise</strong>",
+        "<strong style='color:#163057;'>votre entreprise</strong>",
         "Votre participation est "
-        "<strong style='color:#44403c;'>automatiquement confirm&#233;e</strong> &#10003;",
+        "<strong style='color:#163057;'>automatiquement confirm&#233;e</strong> &#10003;",
     ]
 
     rows = (
