@@ -115,15 +115,6 @@ def render_template(template_html, data):
     if "{{ACCEPTER_BLOCK}}" in rendered:
         rendered = rendered.replace("{{ACCEPTER_BLOCK}}", build_accepter_block(data))
 
-    # ── Champs du template rappel (REMINDER) — valeurs par défaut si absentes ──
-    import html as _html
-    reminder_fields = {
-        "reminderDate": _html.escape((data.get("reminderDate") or "Demain").strip()),
-        "reminderLocation": _html.escape((data.get("reminderLocation") or "(à compléter)").strip()),
-    }
-    for key, value in reminder_fields.items():
-        rendered = rendered.replace(f"{{{{{key}}}}}", value)
-
     # ── Grille des partenaires (section retirée si aucun partenaire) ──
     partners = data.get("partners") or []
     if partners and "{{PARTNERS_BLOCK}}" in rendered:
