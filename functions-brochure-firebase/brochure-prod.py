@@ -143,7 +143,6 @@ def render_template(template_html, data):
     reminder_fields = {
         "reminderDate": _html.escape((data.get("reminderDate") or "Demain").strip()),
         "reminderLocation": _html.escape((data.get("reminderLocation") or "(à compléter)").strip()),
-        "reminderTime": _html.escape((data.get("reminderTime") or "(à compléter)").strip()),
     }
     for key, value in reminder_fields.items():
         rendered = rendered.replace(f"{{{{{key}}}}}", value)
