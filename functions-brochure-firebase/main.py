@@ -114,8 +114,19 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data["eventTitle"] = "Mise en relation"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
+        elif event_type == "REMINDER":
+            print("   • Rappel d'événement (J-1) détecté")
+            data.setdefault("staticTemplateNum", 8)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend peut envoyer "recipients", "destinataire" ou "destEmail"
+            if not data.get("recipients"):
+                data["recipients"] = data.get("destinataire") or data.get("destEmail")
+            data["subject"] = "J-1 avant la conférence PostgreSQL User Group Madagascar – Préparez votre CV !"
+            data["eventTitle"] = "PostgreSQL User Group Madagascar"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", "noreply@athena-event.com")
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST ou ACCEPT_CONTACT_REQUEST")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST ou REMINDER")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)

@@ -30,7 +30,8 @@ TEMPLATES = {
     4: "template_4.html",  # Confirmation d'inscription événementielle
     5: "email_remerciement.html",  # Remerciement post-événement
     6: "email_contact_request.html",  # Demandes de mise en relation entre participants
-    7: "email_contact_accepted.html"  # Acceptation d'une demande de mise en relation
+    7: "email_contact_accepted.html",  # Acceptation d'une demande de mise en relation
+    8: "email_reminder.html"  # Rappel d'événement (J-1)
 }
 
 
@@ -38,7 +39,7 @@ def load_template(template_num):
     """Charge le template HTML depuis le fichier"""
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 7.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 8.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -136,6 +137,16 @@ def render_template(template_html, data):
     # ── Carte de l'accepteur (ACCEPT_CONTACT_REQUEST) ──
     if "{{ACCEPTER_BLOCK}}" in rendered:
         rendered = rendered.replace("{{ACCEPTER_BLOCK}}", build_accepter_block(data))
+
+    # ── Champs du template rappel (REMINDER) — valeurs par défaut si absentes ──
+    import html as _html
+    reminder_fields = {
+        "reminderDate": _html.escape((data.get("reminderDate") or "Demain").strip()),
+        "reminderLocation": _html.escape((data.get("reminderLocation") or "(à compléter)").strip()),
+        "reminderTime": _html.escape((data.get("reminderTime") or "(à compléter)").strip()),
+    }
+    for key, value in reminder_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", value)
 
     # ── Grille des partenaires (section retirée si aucun partenaire) ──
     import re as _re
@@ -710,8 +721,19 @@ def send_brochure_email(request):
             data["eventTitle"] = "Mise en relation"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", SMTP_USER)
+        elif event_type == "REMINDER":
+            print("   • Rappel d'événement (J-1) détecté")
+            data.setdefault("staticTemplateNum", 8)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend peut envoyer "recipients", "destinataire" ou "destEmail"
+            if not data.get("recipients"):
+                data["recipients"] = data.get("destinataire") or data.get("destEmail")
+            data["subject"] = "J-1 avant la conférence PostgreSQL User Group Madagascar – Préparez votre CV !"
+            data["eventTitle"] = "PostgreSQL User Group Madagascar"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", SMTP_USER)
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST ou ACCEPT_CONTACT_REQUEST")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST ou REMINDER")
             return ("OK: type ignoré", 200)
 
         # Envoyer l'email

@@ -15,7 +15,7 @@ def load_template(template_num):
     """
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 7.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 8.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -114,6 +114,16 @@ def render_template(template_html, data):
     # ── Carte de l'accepteur (ACCEPT_CONTACT_REQUEST) ──
     if "{{ACCEPTER_BLOCK}}" in rendered:
         rendered = rendered.replace("{{ACCEPTER_BLOCK}}", build_accepter_block(data))
+
+    # ── Champs du template rappel (REMINDER) — valeurs par défaut si absentes ──
+    import html as _html
+    reminder_fields = {
+        "reminderDate": _html.escape((data.get("reminderDate") or "Demain").strip()),
+        "reminderLocation": _html.escape((data.get("reminderLocation") or "(à compléter)").strip()),
+        "reminderTime": _html.escape((data.get("reminderTime") or "(à compléter)").strip()),
+    }
+    for key, value in reminder_fields.items():
+        rendered = rendered.replace(f"{{{{{key}}}}}", value)
 
     # ── Grille des partenaires (section retirée si aucun partenaire) ──
     partners = data.get("partners") or []
