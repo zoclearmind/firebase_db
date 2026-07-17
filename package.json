@@ -7,7 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "firebase emulators:start --project demo-event-app --import=./emulator-data --export-on-exit=./emulator-data"
+    
   },
   "dependencies": {
     "firebase-tools": "^15.6.0"

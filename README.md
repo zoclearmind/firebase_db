@@ -68,6 +68,9 @@ echo $env:GOOGLE_CLIENT_ID
 
 mvn spring-boot:run
 
+
+ ./mvnw spring-boot:run
+
 ngrok http --domain=overexert-gloomily-exchange.ngrok-free.dev 8080
 
 curl -X POST https://overexert-gloomily-exchange.ngrok-free.dev/webhook/messenger \
