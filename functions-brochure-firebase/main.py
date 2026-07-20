@@ -125,19 +125,19 @@ def send_brochure_email(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedDa
             data["eventTitle"] = "PostgreSQL User Group Madagascar"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
-        elif event_type == "PGCONF_THANK_YOU":
+        elif event_type == "CUSTOM_EMAIL":
             print("   • Email de remerciement post-événement (PGConf Madagascar) détecté")
             data.setdefault("staticTemplateNum", 9)
             data.setdefault("_hide_attachments_section", True)
-            # Le backend peut envoyer "recipients", "destinataire" ou "destEmail"
+            # Le backend envoie "recipient" (singulier)
             if not data.get("recipients"):
-                data["recipients"] = data.get("destinataire") or data.get("destEmail")
+                data["recipients"] = data.get("recipient")
             data["subject"] = "Merci d'avoir été des nôtres — Madagascar PostgreSQL Conference 2026"
             data["eventTitle"] = "Madagascar PostgreSQL Conference 2026"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", "noreply@athena-event.com")
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST, REMINDER ou PGCONF_THANK_YOU")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST, REMINDER ou CUSTOM_EMAIL")
             return
         
         # 4. Envoyer l'email (orchéstrer validation + template + envoi)
