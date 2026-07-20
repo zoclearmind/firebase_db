@@ -31,7 +31,8 @@ TEMPLATES = {
     5: "email_remerciement.html",  # Remerciement post-événement
     6: "email_contact_request.html",  # Demandes de mise en relation entre participants
     7: "email_contact_accepted.html",  # Acceptation d'une demande de mise en relation
-    8: "email_reminder.html"  # Rappel d'événement (J-1)
+    8: "email_reminder.html",  # Rappel d'événement (J-1)
+    9: "email_remerciement_pgconf.html"  # Remerciement post-événement (Madagascar PostgreSQL Conference 2026)
 }
 
 
@@ -39,7 +40,7 @@ def load_template(template_num):
     """Charge le template HTML depuis le fichier"""
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 8.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 9.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
@@ -722,8 +723,19 @@ def send_brochure_email(request):
             data["eventTitle"] = "PostgreSQL User Group Madagascar"
             data.setdefault("company_name", "Athena Event")
             data.setdefault("company_email", SMTP_USER)
+        elif event_type == "PGCONF_THANK_YOU":
+            print("   • Email de remerciement post-événement (PGConf Madagascar) détecté")
+            data.setdefault("staticTemplateNum", 9)
+            data.setdefault("_hide_attachments_section", True)
+            # Le backend peut envoyer "recipients", "destinataire" ou "destEmail"
+            if not data.get("recipients"):
+                data["recipients"] = data.get("destinataire") or data.get("destEmail")
+            data["subject"] = "Merci d'avoir été des nôtres — Madagascar PostgreSQL Conference 2026"
+            data["eventTitle"] = "Madagascar PostgreSQL Conference 2026"
+            data.setdefault("company_name", "Athena Event")
+            data.setdefault("company_email", SMTP_USER)
         else:
-            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST ou REMINDER")
+            print(f"⚠️ Type incorrect: {event_type}, attendu: BROCHURE, EVENT_REGISTRATION_REQUEST_SECOND_CONFIRMATION, EVENT_THANK_YOU, CONTACT_REQUEST, ACCEPT_CONTACT_REQUEST, REMINDER ou PGCONF_THANK_YOU")
             return ("OK: type ignoré", 200)
 
         # Envoyer l'email

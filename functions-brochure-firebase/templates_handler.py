@@ -15,7 +15,7 @@ def load_template(template_num):
     """
     template_file = TEMPLATES.get(template_num)
     if not template_file:
-        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 8.")
+        raise ValueError(f"Template numéro {template_num} non trouvé. Utilisez un numéro de 1 à 9.")
     
     template_path = os.path.join(os.path.dirname(__file__), "templates", template_file)
     
