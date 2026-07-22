@@ -461,13 +461,19 @@ def _alert(content: str, variant: str = "warning") -> str:
 """
 
 
-def _qr_block(qr_token: str = "") -> str:
+def _qr_block(qr_token: str = "", cid: str = "qrcode", ticket_label: str = "") -> str:
     """
     Bloc QR code centré sur fond navy profond.
-    L'image est injectée via Content-ID (src="cid:qrcode") — pas une URL externe.
+    L'image est injectée via Content-ID (src="cid:{cid}") — pas une URL externe.
     La frame blanche autour du QR est nécessaire pour le contraste sur fond sombre.
     Taille réduite à 160px sur mobile via .qr-img.
+
+    cid          : Content-ID de l'image QR à référencer — permet d'assembler
+                   plusieurs blocs QR dans un même email (un par billet).
+    ticket_label : libellé affiché au-dessus du QR (ex: "Billet 1 / 3").
+                   Vide → libellé générique par défaut.
     """
+    label = ticket_label or "Votre code d'acc&#232;s personnel"
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:28px 0;">
@@ -480,7 +486,7 @@ def _qr_block(qr_token: str = "") -> str:
           <p style="margin:0 0 6px 0;font-family:Arial,sans-serif;font-size:10px;
                      font-weight:700;color:#c7a253;text-transform:uppercase;
                      letter-spacing:3px;">
-            Votre code d'acc&#232;s personnel
+            {label}
           </p>
           <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
             <tr><td style="width:36px;height:2px;background-color:#c7a253;
@@ -495,7 +501,7 @@ def _qr_block(qr_token: str = "") -> str:
                   style="background-color:#ffffff;border-radius:10px;
                          padding:14px;border:1px solid #c7a253;">
                 <img class="qr-img"
-                     src="cid:qrcode"
+                     src="cid:{cid}"
                      alt="QR Code d'acc&#232;s"
                      width="190" height="190"
                      style="width:190px;height:190px;display:block;" />
@@ -645,8 +651,8 @@ def _build_zpl(
     company_name: str,
     user_role: str,
 ) -> str:
-    nom     = _truncate(user_last_name.upper(), MAX_CHARS_NOM)
-    prenom  = _truncate(user_first_name, MAX_CHARS_PRENOM)
+    nom     = _truncate((user_last_name or "").upper(), MAX_CHARS_NOM)
+    prenom  = _truncate(user_first_name or "", MAX_CHARS_PRENOM)
     company = _truncate(company_name.strip().upper(), MAX_CHARS_ENTREPRISE) if company_name and company_name.strip() and company_name.strip() != "N/A" else ""
     role    = _truncate(user_role.strip(), MAX_CHARS_POSTE)                 if user_role    and user_role.strip()    and user_role.strip()    != "N/A" else ""
 
@@ -731,11 +737,12 @@ def process_email(request):
         logging.error("Champ 'type' manquant")
         return ("Bad Request: champ 'type' manquant", 400)
 
-    # ACCEPTER LES TROIS TYPES
+    # ACCEPTER LES TYPES CONNUS
     ACCEPTED_TYPES = [
         "EVENT_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED_INVITED",
+        "EVENT_REGISTRATION_CONFIRMED_MULTITICKET",
     ]
     if data["type"] not in ACCEPTED_TYPES:
         logging.warning(f"Type incorrect: {data['type']}")
@@ -781,6 +788,70 @@ def process_email(request):
             return ("OK", 200)
         except Exception as e:
             logging.error(f"Échec billet invité: {str(e)}")
+            return (f"Internal Server Error: {str(e)}", 500)
+
+    # ── Dispatch : plusieurs billets sur un même email ────────────
+    if data["type"] == "EVENT_REGISTRATION_CONFIRMED_MULTITICKET":
+        multi_required = [
+            "registrationId", "eventId",
+            "userEmail", "userFirstName", "userLastName",
+            "eventTitle", "eventStartDate", "eventLocation",
+            "ListQrCodeToken", "ListQrCode",
+        ]
+        missing_multi = [f for f in multi_required if f not in data]
+        if missing_multi:
+            logging.error(f"Champs manquants (multi-billets): {missing_multi}")
+            return (f"Bad Request: champs manquants {missing_multi}", 400)
+
+        qr_tokens = data["ListQrCodeToken"]
+        qr_codes  = data["ListQrCode"]
+        if not qr_tokens or not qr_codes or len(qr_tokens) != len(qr_codes):
+            logging.error(
+                f"ListQrCodeToken/ListQrCode invalides ou de tailles différentes "
+                f"({len(qr_tokens) if qr_tokens else 0} vs {len(qr_codes) if qr_codes else 0})"
+            )
+            return ("Bad Request: ListQrCodeToken/ListQrCode invalides", 400)
+
+        try:
+            registration_id = data["registrationId"]
+            event_id         = data["eventId"]
+            user_email       = data["userEmail"]
+            user_first_name  = data["userFirstName"]
+            user_last_name   = data["userLastName"]
+            event_title      = data["eventTitle"]
+            event_start      = data["eventStartDate"]
+            event_location   = data["eventLocation"]
+            event_image_url  = data.get("eventImageUrl")
+            company_name     = data.get("companyName", "N/A")
+            user_role        = data.get("userRole", "Participant")
+
+            logging.info(f"Multi-billets ({len(qr_tokens)}) pour {user_email} - {event_title}")
+
+            qr_base64_list = []
+            for qr_code in qr_codes:
+                qr_img = qrcode.make(qr_code, box_size=10, border=2)
+                qr_buffer = BytesIO()
+                qr_img.save(qr_buffer, format="PNG")
+                qr_buffer.seek(0)
+                qr_base64_list.append(base64.b64encode(qr_buffer.getvalue()).decode('utf-8'))
+
+            bucket_name = "event-athena-prod-plaform.firebasestorage.app"
+            logging.info("Premier envoi multi-billets → Génération des badges ZPL")
+            for qr_token in qr_tokens:
+                _generate_and_upload_zpl(
+                    bucket_name, event_id, qr_token,
+                    user_first_name, user_last_name, company_name, user_role
+                )
+
+            send_ticket_email_multiticket(
+                user_email, user_first_name, user_last_name,
+                event_title, event_start, event_location,
+                qr_base64_list, qr_tokens, registration_id,
+                event_image_url=event_image_url,
+            )
+            return ("OK", 200)
+        except Exception as e:
+            logging.error(f"Échec traitement multi-billets: {str(e)}")
             return (f"Internal Server Error: {str(e)}", 500)
 
     # ── Validation (types classiques) ────────────────────────────
@@ -1007,6 +1078,179 @@ Antananarivo, Madagascar
         logging.info(f"Email billet envoyé à {email}")
     except Exception as e:
         logging.error(f"Erreur envoi email : {e}")
+        raise
+
+
+def send_ticket_email_multiticket(
+    email: str,
+    first_name: str,
+    last_name: str,
+    event_title: str,
+    event_start: str,
+    event_location: str,
+    qr_base64_list: list,
+    qr_tokens: list,
+    registration_id: str,
+    event_image_url: str = None,
+):
+    """
+    Email de confirmation groupé : plusieurs billets (donc plusieurs QR codes,
+    un par personne) envoyés dans un seul email à un même destinataire.
+    Un bloc QR distinct est affiché par billet, chacun avec son propre
+    Content-ID (qrcode1, qrcode2, ...) pour éviter tout conflit d'image inline.
+    """
+    SMTP_HOST     = os.environ.get("SMTP_HOST", "smtp.zeptomail.com")
+    SMTP_PORT     = int(os.environ.get("SMTP_PORT", "587"))
+    SMTP_USER     = os.environ.get("SMTP_USER", "noreply@athena-event.com")
+    SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+
+    if not all([SMTP_USER, SMTP_PASSWORD]):
+        logging.error("Variables SMTP manquantes")
+        raise ValueError("Configuration SMTP incomplète")
+
+    ticket_count = len(qr_tokens)
+
+    # ── Infos inscription ──
+    info_rows = (
+        _info_row("", "Participant",         f"{first_name} {last_name}")
+        + _info_row("", "Email",             email)
+        + _info_row("", "Événement",         f"<strong>{event_title}</strong>")
+        + _info_row("", "Date",              event_start)
+        + _info_row("", "Lieu",              event_location)
+        + _info_row("", "Nombre de billets", str(ticket_count))
+    )
+
+    # ── Consignes de sécurité ──
+    security_items = [
+        f"Vous disposez de <strong>{ticket_count} billets</strong>, chacun avec son propre QR code",
+        "<strong>Ne partagez jamais un QR code</strong> avec qui que ce soit en dehors de son destinataire",
+        "Chaque code est <strong>strictement personnel</strong> et identifie un participant de manière unique",
+        "Toute personne en possession d'un code peut accéder à l'événement à la place du participant concerné",
+        "Ne publiez pas ces billets sur les réseaux sociaux",
+        "En cas de perte ou de vol, <strong>contactez-nous immédiatement</strong>",
+    ]
+
+    # ── Un bloc QR par billet, chacun avec un Content-ID unique ──
+    qr_blocks = ""
+    for i, token in enumerate(qr_tokens, start=1):
+        qr_blocks += _qr_block(
+            token,
+            cid=f"qrcode{i}",
+            ticket_label=f"Billet {i} / {ticket_count}",
+        )
+
+    # ── Assemblage des blocs visuels ──
+    rows = (
+        _hero(
+            title="Confirmation d'inscription",
+            subtitle=f"Vos {ticket_count} billets pour {event_title}",
+            email_type_label="Billets événement",
+            hero_image_url=event_image_url or "",
+        )
+        + _body_open(
+            greeting=f"Bonjour {first_name} {last_name},",
+            intro=(
+                f"Nous avons le plaisir de confirmer votre inscription pour "
+                f"<strong>{ticket_count} billets</strong>. Chaque billet ci-dessous "
+                "dispose de son propre code d'accès — merci de conserver cet email "
+                "précieusement et de présenter séparément chaque code à l'entrée "
+                "de l'événement."
+            )
+        )
+        + _info_card(info_rows, label="DÉTAILS DE L'INSCRIPTION")
+        + qr_blocks
+        + _security_card(security_items)
+        + """
+        <p style="margin:20px 0 0 0;font-family:Arial,sans-serif;font-size:14px;
+                   color:#3b4453;line-height:1.6;">
+          Nous vous remercions pour votre confiance et restons &#224; votre disposition
+          pour toute question.
+        </p>
+        """
+        + _body_close()
+    )
+
+    html_content = _build_html(
+        rows,
+        preheader=f"Vos {ticket_count} billets sont confirmés — {event_title}"
+    )
+
+    tokens_text = "\n".join(
+        f"Billet {i}/{ticket_count} — code : {token}"
+        for i, token in enumerate(qr_tokens, start=1)
+    )
+
+    text_content = f"""Athena Event - Confirmation d'inscription
+
+Bonjour {first_name} {last_name},
+
+Nous avons le plaisir de confirmer votre inscription pour {ticket_count} billets
+à l'événement suivant.
+
+DÉTAILS DE L'INSCRIPTION
+
+Participant      : {first_name} {last_name}
+Email            : {email}
+Événement        : {event_title}
+Date             : {event_start}
+Lieu             : {event_location}
+Nombre de billets: {ticket_count}
+
+VOS BILLETS
+{tokens_text}
+
+CONSIGNES DE SÉCURITÉ :
+- Vous disposez de {ticket_count} billets, chacun avec son propre QR code
+- Ne partagez jamais un QR code avec qui que ce soit en dehors de son destinataire
+- Chaque code est strictement personnel et identifie un participant de manière unique
+- Toute personne en possession d'un code peut accéder à l'événement à la place du participant concerné
+- Ne publiez pas ces billets sur les réseaux sociaux
+- En cas de perte ou de vol, contactez-nous immédiatement
+
+Cordialement,
+L'équipe Athena Event
+
+---
++261 38 32 046 13
+sales@athena-event.com
+www.athena-event.com
+
+© {datetime.now().year} Athena Event by Clearmind Analytics
+Antananarivo, Madagascar
+"""
+
+    # ── Construction MIME — structure : related > alternative + N images CID ──
+    msg             = MIMEMultipart('related')
+    msg_alternative = MIMEMultipart('alternative')
+    msg.attach(msg_alternative)
+
+    msg_alternative.attach(MIMEText(text_content, 'plain', 'utf-8'))
+    msg_alternative.attach(MIMEText(html_content, 'html',  'utf-8'))
+
+    for i, qr_base64 in enumerate(qr_base64_list, start=1):
+        qr_bytes = base64.b64decode(qr_base64)
+        qr_image = MIMEBase('image', 'png')
+        qr_image.set_payload(qr_bytes)
+        encoders.encode_base64(qr_image)
+        qr_image.add_header('Content-ID', f'<qrcode{i}>')
+        qr_image.add_header('Content-Disposition', 'inline', filename=f'qrcode{i}.png')
+        msg.attach(qr_image)
+
+    msg['Subject']    = f"Confirmation de vos {ticket_count} billets — {event_title}"
+    msg['From']       = f"Athena Event <{SMTP_USER}>"
+    msg['To']         = email
+    msg['Reply-To']   = SMTP_USER
+    msg['Message-ID'] = f"<{registration_id}@athena-event.com>"
+    msg['X-Mailer']   = "Athena Event Platform"
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SMTP_USER, SMTP_PASSWORD)
+            server.send_message(msg)
+        logging.info(f"Email multi-billets ({ticket_count}) envoyé à {email}")
+    except Exception as e:
+        logging.error(f"Erreur envoi email multi-billets : {e}")
         raise
 
 

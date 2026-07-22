@@ -9,7 +9,7 @@ from firebase_functions import pubsub_fn
 
 from storage import storage_client  # noqa: F401 — déclenche la config de l'émulateur
 from pdf_generator import generate_and_upload_badge
-from email_sender import send_ticket_email_with_qr, send_ticket_email_invited
+from email_sender import send_ticket_email_with_qr, send_ticket_email_invited, send_ticket_email_multiticket
 
 # Initialiser Firebase Admin
 initialize_app()
@@ -49,11 +49,12 @@ def send_event_ticket(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedData
         logging.error("Champ 'type' manquant")
         return
 
-    # ✅ ACCEPTER LES TROIS TYPES
+    # ✅ ACCEPTER LES TYPES CONNUS
     ACCEPTED_TYPES = [
         "EVENT_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED",
         "RESEND_REGISTRATION_CONFIRMED_INVITED",
+        "EVENT_REGISTRATION_CONFIRMED_MULTITICKET",
     ]
     if data["type"] not in ACCEPTED_TYPES:
         logging.warning(f"Type incorrect: {data['type']}")
@@ -101,6 +102,70 @@ def send_event_ticket(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedData
             )
         except Exception as e:
             logging.error(f"Échec traitement billet invité: {e}")
+        return
+
+    # ── Dispatch : plusieurs billets sur un même email ────────────
+    if data["type"] == "EVENT_REGISTRATION_CONFIRMED_MULTITICKET":
+        multi_required = [
+            "registrationId", "eventId",
+            "userEmail", "userFirstName", "userLastName",
+            "eventTitle", "eventStartDate", "eventLocation",
+            "ListQrCodeToken", "ListQrCode",
+        ]
+        missing_multi = [f for f in multi_required if f not in data]
+        if missing_multi:
+            logging.error(f"Champs manquants (multi-billets): {missing_multi}")
+            return
+
+        qr_tokens = data["ListQrCodeToken"]
+        qr_codes  = data["ListQrCode"]
+        if not qr_tokens or not qr_codes or len(qr_tokens) != len(qr_codes):
+            logging.error(
+                f"ListQrCodeToken/ListQrCode invalides ou de tailles différentes "
+                f"({len(qr_tokens) if qr_tokens else 0} vs {len(qr_codes) if qr_codes else 0})"
+            )
+            return
+
+        registration_id = data["registrationId"]
+        user_email       = data["userEmail"]
+        user_first_name  = data["userFirstName"]
+        user_last_name   = data["userLastName"]
+        event_title      = data["eventTitle"]
+        event_start      = data["eventStartDate"]
+        event_location   = data["eventLocation"]
+        event_image_url  = data.get("eventImageUrl")
+        company_name     = data.get("companyName", "N/A")
+        user_role        = data.get("userRole", "Participant")
+
+        logging.info(f"Multi-billets ({len(qr_tokens)}) pour {user_email} - {event_title}")
+
+        try:
+            qr_base64_list = []
+            for qr_code in qr_codes:
+                qr_img = qrcode.make(qr_code, box_size=10, border=2)
+                qr_buffer = BytesIO()
+                qr_img.save(qr_buffer, format="PNG")
+                qr_buffer.seek(0)
+                qr_base64_list.append(base64.b64encode(qr_buffer.getvalue()).decode('utf-8'))
+
+            logging.info("Premier envoi multi-billets → Génération des badges ZPL")
+            for qr_token in qr_tokens:
+                generate_and_upload_badge(
+                    qr_token=qr_token,
+                    user_first_name=user_first_name,
+                    user_last_name=user_last_name,
+                    company_name=company_name,
+                    user_role=user_role,
+                )
+
+            send_ticket_email_multiticket(
+                user_email, user_first_name, user_last_name,
+                event_title, event_start, event_location,
+                qr_base64_list, qr_tokens, registration_id,
+                event_image_url=event_image_url,
+            )
+        except Exception as e:
+            logging.error(f"Échec traitement multi-billets: {e}")
         return
 
     # ── Extraction (types classiques) ────────────────────────────

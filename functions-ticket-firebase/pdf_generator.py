@@ -73,8 +73,8 @@ def _build_zpl(
     """
 
     # ── Colonne gauche : texte ────────────────────────────────────
-    nom     = _truncate(user_last_name.upper(), MAX_CHARS_NOM)
-    prenom  = _truncate(user_first_name, MAX_CHARS_PRENOM)
+    nom     = _truncate((user_last_name or "").upper(), MAX_CHARS_NOM)
+    prenom  = _truncate(user_first_name or "", MAX_CHARS_PRENOM)
     company = _truncate(company_name.strip().upper(), MAX_CHARS_ENTREPRISE) if company_name and company_name.strip() and company_name.strip() != "N/A" else ""
     role    = _truncate(user_role.strip(), MAX_CHARS_POSTE)                 if user_role    and user_role.strip()    and user_role.strip()    != "N/A" else ""
 

@@ -30,7 +30,8 @@ previews_redesign
 test_reminder.json
 # Coverage directory used by tools like istanbul
 coverage
-
+test_event_registration_confirmed_multiticket.json
+test_event_registration_confirmed.json
 # nyc test coverage
 .nyc_output
 

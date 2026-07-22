@@ -249,13 +249,19 @@ def _info_row(icon: str, label: str, value: str) -> str:
 """
 
 
-def _qr_block(qr_token: str = "") -> str:
+def _qr_block(qr_token: str = "", cid: str = "qrcode", ticket_label: str = "") -> str:
     """
     Bloc QR code centré sur fond navy profond.
-    L'image est injectée via Content-ID (src="cid:qrcode") — pas une URL externe.
+    L'image est injectée via Content-ID (src="cid:{cid}") — pas une URL externe.
     La frame blanche autour du QR est nécessaire pour le contraste sur fond sombre.
     Taille réduite à 160px sur mobile via .qr-img.
+
+    cid          : Content-ID de l'image QR à référencer — permet d'assembler
+                   plusieurs blocs QR dans un même email (un par billet).
+    ticket_label : libellé affiché au-dessus du QR (ex: "Billet 1 / 3").
+                   Vide → libellé générique par défaut.
     """
+    label = ticket_label or "Votre code d'acc&#232;s personnel"
     return f"""
     <table role="presentation" border="0" cellpadding="0" cellspacing="0"
            width="100%" style="margin:28px 0;">
@@ -268,7 +274,7 @@ def _qr_block(qr_token: str = "") -> str:
           <p style="margin:0 0 6px 0;font-family:Arial,sans-serif;font-size:10px;
                      font-weight:700;color:#c7a253;text-transform:uppercase;
                      letter-spacing:3px;">
-            Votre code d'acc&#232;s personnel
+            {label}
           </p>
           <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center">
             <tr><td style="width:36px;height:2px;background-color:#c7a253;
@@ -283,7 +289,7 @@ def _qr_block(qr_token: str = "") -> str:
                   style="background-color:#ffffff;border-radius:10px;
                          padding:14px;border:1px solid #c7a253;">
                 <img class="qr-img"
-                     src="cid:qrcode"
+                     src="cid:{cid}"
                      alt="QR Code d'acc&#232;s"
                      width="190" height="190"
                      style="width:190px;height:190px;display:block;" />
