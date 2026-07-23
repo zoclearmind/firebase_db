@@ -12,8 +12,16 @@
 # ╚══════════════════════════════════════════════════════════════╝
 
 import logging
+import os
 
 from storage import storage_client
+
+# Même bucket que main_2.py en production ; bucket démo de l'émulateur en local.
+BUCKET_NAME = (
+    "event-athena-prod-plaform.firebasestorage.app"
+    if os.environ.get("K_SERVICE")
+    else "demo-event-app.appspot.com"
+)
 
 
 # ──────────────────────────────────────────────────────────────
@@ -122,9 +130,9 @@ def generate_and_upload_badge(
 
     # ── Upload GCS ────────────────────────────────────────────────
     try:
-        bucket = storage_client.bucket("demo-event-app.appspot.com")
+        bucket = storage_client.bucket(BUCKET_NAME)
         blob   = bucket.blob(f"tickets/badge_{qr_token}.zpl")
         blob.upload_from_string(zpl_content.encode("utf-8"), content_type="text/plain; charset=utf-8")
         logging.info(f"📦 Badge ZPL uploadé: tickets/badge_{qr_token}.zpl")
     except Exception as e:
-        logging.error(f"❌ Échec upload: {e}")
+        logging.error(f"❌ Échec upload: {type(e).__name__}: {e!r}")

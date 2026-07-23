@@ -229,4 +229,4 @@ def send_event_ticket(event: pubsub_fn.CloudEvent[pubsub_fn.MessagePublishedData
         )
 
     except Exception as e:
-        logging.error(f"Échec traitement billet ({data['type']}): {e}")
+        logging.error(f"Échec traitement billet ({data['type']}): {type(e).__name__}: {e!r}")
